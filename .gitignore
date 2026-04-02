@@ -68,4 +68,4 @@ DerivedData/
 build/
 
 # macOS
-.DS_Store
+.DS_Store.superpowers/
