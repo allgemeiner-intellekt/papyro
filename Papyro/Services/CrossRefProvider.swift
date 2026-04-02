@@ -48,7 +48,8 @@ final class CrossRefProvider: MetadataProvider, Sendable {
         let authors = authorArray.compactMap { author -> String? in
             guard let family = author["family"] as? String else { return nil }
             let given = author["given"] as? String
-            return given != nil ? "\(family), \(given!)" : family
+            if let given { return "\(family), \(given)" }
+            return family
         }
 
         var year: Int?

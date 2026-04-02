@@ -31,7 +31,14 @@ class ImportCoordinator {
 
     func loadExistingPapers() {
         if let loaded = try? indexService.loadAll(from: libraryRoot) {
-            papers = loaded
+            // Reset any stale in-progress states from a prior crash
+            papers = loaded.map { paper in
+                var p = paper
+                if p.importState == .importing || p.importState == .resolving {
+                    p.importState = .unresolved
+                }
+                return p
+            }
         }
     }
 

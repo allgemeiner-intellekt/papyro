@@ -1,0 +1,93 @@
+<h2>M2 Import Pipeline — Architecture</h2>
+<p class="subtitle">Service decomposition and data flow</p>
+
+<div class="mockup">
+  <div class="mockup-header">Import Pipeline Architecture</div>
+  <div class="mockup-body" style="padding: 24px; font-family: system-ui;">
+    <div style="display: flex; flex-direction: column; gap: 16px;">
+
+      <!-- User action -->
+      <div style="text-align: center; padding: 12px; background: #e8f0fe; border-radius: 8px; border: 2px solid #4285f4;">
+        <strong>User drops PDF(s) onto window</strong>
+      </div>
+
+      <div style="text-align: center; color: #666;">↓</div>
+
+      <!-- ImportCoordinator -->
+      <div style="background: #1a1a2e; color: #fff; border-radius: 12px; padding: 16px;">
+        <div style="font-weight: 700; font-size: 16px; margin-bottom: 8px;">ImportCoordinator</div>
+        <div style="font-size: 13px; color: #aaa;">Orchestrates the pipeline. Creates a Paper model with status "importing", drives each step, updates state on completion or failure.</div>
+
+        <div style="display: flex; gap: 12px; margin-top: 16px; flex-wrap: wrap;">
+
+          <!-- Step 1 -->
+          <div style="flex: 1; min-width: 140px; background: #16213e; border-radius: 8px; padding: 12px; border-left: 3px solid #4ade80;">
+            <div style="font-size: 11px; color: #4ade80; font-weight: 600;">STEP 1</div>
+            <div style="font-weight: 600; margin: 4px 0;">FileService</div>
+            <div style="font-size: 12px; color: #aaa;">Copy PDF to <code style="background:#333;padding:2px 4px;border-radius:3px;">papers/</code> with temp UUID name</div>
+          </div>
+
+          <!-- Step 2 -->
+          <div style="flex: 1; min-width: 140px; background: #16213e; border-radius: 8px; padding: 12px; border-left: 3px solid #60a5fa;">
+            <div style="font-size: 11px; color: #60a5fa; font-weight: 600;">STEP 2</div>
+            <div style="font-weight: 600; margin: 4px 0;">TextExtractor</div>
+            <div style="font-size: 12px; color: #aaa;">PDFKit: extract text from first 5 pages → save to <code style="background:#333;padding:2px 4px;border-radius:3px;">.cache/text/</code></div>
+          </div>
+
+          <!-- Step 3 -->
+          <div style="flex: 1; min-width: 140px; background: #16213e; border-radius: 8px; padding: 12px; border-left: 3px solid #f59e0b;">
+            <div style="font-size: 11px; color: #f59e0b; font-weight: 600;">STEP 3</div>
+            <div style="font-weight: 600; margin: 4px 0;">IdentifierParser</div>
+            <div style="font-size: 12px; color: #aaa;">Regex scan for DOI, arXiv ID, PMID, ISBN from extracted text</div>
+          </div>
+
+          <!-- Step 4 -->
+          <div style="flex: 1; min-width: 140px; background: #16213e; border-radius: 8px; padding: 12px; border-left: 3px solid #a78bfa;">
+            <div style="font-size: 11px; color: #a78bfa; font-weight: 600;">STEP 4</div>
+            <div style="font-weight: 600; margin: 4px 0;">MetadataService</div>
+            <div style="font-size: 12px; color: #aaa;">Protocol → TranslationServerProvider (primary) or CrossRefProvider (fallback)</div>
+          </div>
+
+          <!-- Step 5 -->
+          <div style="flex: 1; min-width: 140px; background: #16213e; border-radius: 8px; padding: 12px; border-left: 3px solid #f472b6;">
+            <div style="font-size: 11px; color: #f472b6; font-weight: 600;">STEP 5</div>
+            <div style="font-weight: 600; margin: 4px 0;">IndexService</div>
+            <div style="font-size: 12px; color: #aaa;">Write per-paper JSON to <code style="background:#333;padding:2px 4px;border-radius:3px;">index/</code>, regenerate <code style="background:#333;padding:2px 4px;border-radius:3px;">_all.json</code></div>
+          </div>
+
+          <!-- Step 6 -->
+          <div style="flex: 1; min-width: 140px; background: #16213e; border-radius: 8px; padding: 12px; border-left: 3px solid #fb923c;">
+            <div style="font-size: 11px; color: #fb923c; font-weight: 600;">STEP 6</div>
+            <div style="font-weight: 600; margin: 4px 0;">FileService</div>
+            <div style="font-size: 12px; color: #aaa;">Rename PDF to <code style="background:#333;padding:2px 4px;border-radius:3px;">2024_chen_attention.pdf</code></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center; color: #666;">↓</div>
+
+      <!-- Result states -->
+      <div style="display: flex; gap: 12px;">
+        <div style="flex: 1; padding: 12px; background: #dcfce7; border-radius: 8px; text-align: center; border: 2px solid #4ade80;">
+          <strong style="color: #166534;">✓ Resolved</strong>
+          <div style="font-size: 13px; color: #333; margin-top: 4px;">Metadata found, PDF renamed, index written</div>
+        </div>
+        <div style="flex: 1; padding: 12px; background: #fef3c7; border-radius: 8px; text-align: center; border: 2px solid #f59e0b;">
+          <strong style="color: #92400e;">⚠ Unresolved</strong>
+          <div style="font-size: 13px; color: #333; margin-top: 4px;">No metadata found — PDF kept with temp name, retry later</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 24px;">
+  <h3>Key Design Decisions</h3>
+  <ul style="line-height: 1.8;">
+    <li><strong>papers/</strong> is flat — no year subfolders. All organization via symlinks.</li>
+    <li><strong>Copy only</strong> — no move option. Original PDF untouched.</li>
+    <li><strong>MetadataService</strong> is a protocol — real (translation-server) and mock implementations.</li>
+    <li><strong>Async pipeline</strong> — each step is async, UI updates reactively via @Observable Paper model.</li>
+    <li><strong>Rename on resolve</strong> — PDF starts as UUID, renamed to <code>year_author_title.pdf</code> when metadata arrives.</li>
+  </ul>
+</div>

@@ -1,0 +1,110 @@
+<h2>M2 Import Flow — State Transitions</h2>
+<p class="subtitle">What the user sees at each stage of the pipeline</p>
+
+<div class="mockup">
+  <div class="mockup-header">Paper State Machine</div>
+  <div class="mockup-body" style="padding: 24px; font-family: system-ui;">
+    <div style="display: flex; flex-direction: column; gap: 12px;">
+
+      <!-- State 1: Importing -->
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="min-width: 120px; padding: 8px 16px; background: #dbeafe; border: 2px solid #3b82f6; border-radius: 20px; text-align: center; font-weight: 600; color: #1e40af;">Importing</div>
+        <div style="flex: 1; font-size: 14px; color: #555;">
+          PDF dropped. File copied to <code>papers/{uuid}.pdf</code>. Appears in paper list immediately.<br>
+          <strong>Row shows:</strong> original filename, spinner icon, "Importing..." badge
+        </div>
+      </div>
+
+      <div style="text-align: center; color: #999; font-size: 20px;">↓ <span style="font-size: 12px;">text extracted + identifiers parsed</span></div>
+
+      <!-- State 2: Resolving -->
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <div style="min-width: 120px; padding: 8px 16px; background: #fef3c7; border: 2px solid #f59e0b; border-radius: 20px; text-align: center; font-weight: 600; color: #92400e;">Resolving</div>
+        <div style="flex: 1; font-size: 14px; color: #555;">
+          Identifiers found (or title extracted). Metadata fetch in progress.<br>
+          <strong>Row shows:</strong> extracted title (if any) or filename, "Resolving..." badge
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 80px; color: #999; font-size: 20px;">
+        <div>↓ <span style="font-size: 12px;">metadata found</span></div>
+        <div>↓ <span style="font-size: 12px;">fetch failed / no identifiers</span></div>
+      </div>
+
+      <!-- State 3: Fork -->
+      <div style="display: flex; gap: 16px;">
+        <!-- Resolved -->
+        <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+          <div style="min-width: 100px; padding: 8px 16px; background: #dcfce7; border: 2px solid #22c55e; border-radius: 20px; text-align: center; font-weight: 600; color: #166534;">Resolved</div>
+          <div style="flex: 1; font-size: 14px; color: #555;">
+            Full metadata populated. PDF renamed. Index written.<br>
+            <strong>Row shows:</strong> title, authors, year, journal — normal paper row with reading status badge
+          </div>
+        </div>
+
+        <!-- Unresolved -->
+        <div style="flex: 1; display: flex; align-items: center; gap: 12px;">
+          <div style="min-width: 100px; padding: 8px 16px; background: #fee2e2; border: 2px solid #ef4444; border-radius: 20px; text-align: center; font-weight: 600; color: #991b1b;">Unresolved</div>
+          <div style="flex: 1; font-size: 14px; color: #555;">
+            No metadata. PDF keeps temp name. User can edit manually or retry.<br>
+            <strong>Row shows:</strong> filename, "Unresolved" badge, edit button
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top: 32px;">
+  <div class="mockup">
+    <div class="mockup-header">Paper List Row — Three States</div>
+    <div class="mockup-body" style="padding: 16px; font-family: system-ui;">
+
+      <!-- Importing row -->
+      <div style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; gap: 12px;">
+        <div style="width: 20px; height: 20px; border: 3px solid #3b82f6; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; color: #333;">my-downloaded-paper.pdf</div>
+          <div style="font-size: 13px; color: #999;">Importing...</div>
+        </div>
+        <div style="padding: 3px 10px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 12px; font-weight: 600;">Importing</div>
+      </div>
+
+      <!-- Resolving row -->
+      <div style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; gap: 12px;">
+        <div style="width: 20px; height: 20px; border: 3px solid #f59e0b; border-top-color: transparent; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; color: #333;">Attention Is All You Need</div>
+          <div style="font-size: 13px; color: #999;">DOI: 10.48550/arXiv.1706.03762 — Looking up metadata...</div>
+        </div>
+        <div style="padding: 3px 10px; background: #fef3c7; color: #92400e; border-radius: 12px; font-size: 12px; font-weight: 600;">Resolving</div>
+      </div>
+
+      <!-- Resolved row -->
+      <div style="display: flex; align-items: center; padding: 12px; border-bottom: 1px solid #eee; gap: 12px;">
+        <div style="width: 20px; height: 20px; color: #22c55e; text-align: center; font-weight: bold;">✓</div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; color: #333;">Attention Is All You Need</div>
+          <div style="font-size: 13px; color: #999;">Vaswani et al. · 2017 · NeurIPS</div>
+        </div>
+        <div style="padding: 3px 10px; background: #dbeafe; color: #1e40af; border-radius: 12px; font-size: 12px; font-weight: 600;">To Read</div>
+      </div>
+
+      <!-- Unresolved row -->
+      <div style="display: flex; align-items: center; padding: 12px; gap: 12px;">
+        <div style="width: 20px; height: 20px; color: #ef4444; text-align: center; font-weight: bold;">!</div>
+        <div style="flex: 1;">
+          <div style="font-weight: 600; color: #333;">mysterious-paper.pdf</div>
+          <div style="font-size: 13px; color: #999;">Could not resolve metadata</div>
+        </div>
+        <div style="padding: 3px 10px; background: #fee2e2; color: #991b1b; border-radius: 12px; font-size: 12px; font-weight: 600;">Unresolved</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+code { background: #f1f5f9; padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+</style>

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Paper: Codable, Identifiable {
+struct Paper: Codable, Identifiable, Sendable {
     let id: UUID
     var canonicalId: String?
 
