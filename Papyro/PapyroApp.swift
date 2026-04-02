@@ -2,8 +2,14 @@ import SwiftUI
 
 @main
 struct PapyroApp: App {
-    @State private var appState = AppState()
-    @State private var libraryManager: LibraryManager?
+    @State private var appState: AppState
+    @State private var libraryManager: LibraryManager
+
+    init() {
+        let state = AppState()
+        _appState = State(initialValue: state)
+        _libraryManager = State(initialValue: LibraryManager(appState: state))
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -15,12 +21,9 @@ struct PapyroApp: App {
                 }
             }
             .environment(appState)
-            .environment(libraryManager ?? LibraryManager(appState: appState))
+            .environment(libraryManager)
             .onAppear {
-                if libraryManager == nil {
-                    libraryManager = LibraryManager(appState: appState)
-                }
-                libraryManager?.detectExistingLibrary()
+                libraryManager.detectExistingLibrary()
             }
         }
     }
