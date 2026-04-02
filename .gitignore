@@ -61,5 +61,11 @@ fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
 
+# Xcode project user data
+Papyro.xcodeproj/xcuserdata/
+Papyro.xcodeproj/project.xcworkspace/xcuserdata/
+DerivedData/
+build/
+
 # macOS
 .DS_Store

@@ -1,0 +1,387 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */; };
+		449098AD804296E861DDEC3B /* PapyroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A50C336BBC40CF8F7CE556D /* PapyroTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DDE031B62D7D376F8AEAC0DF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BC5456D28E60D20546816EA4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 3200FBD69376141E779AEC44;
+			remoteInfo = Papyro;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		2A50C336BBC40CF8F7CE556D /* PapyroTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PapyroTests.swift; sourceTree = "<group>"; };
+		77805105CEDE1F8E7CD1C0D7 /* Papyro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Papyro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		912C7E378D53C7A5731D3CDF /* PapyroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PapyroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PapyroApp.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		08A3B5FCBF00513059B41F33 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				77805105CEDE1F8E7CD1C0D7 /* Papyro.app */,
+				912C7E378D53C7A5731D3CDF /* PapyroTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		3D709BC8EF9E5E26DB9197AA = {
+			isa = PBXGroup;
+			children = (
+				87208E8A83A51280C9254360 /* Papyro */,
+				D70123C1A100F0385F166B6D /* PapyroTests */,
+				08A3B5FCBF00513059B41F33 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		87208E8A83A51280C9254360 /* Papyro */ = {
+			isa = PBXGroup;
+			children = (
+				A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */,
+			);
+			path = Papyro;
+			sourceTree = "<group>";
+		};
+		D70123C1A100F0385F166B6D /* PapyroTests */ = {
+			isa = PBXGroup;
+			children = (
+				2A50C336BBC40CF8F7CE556D /* PapyroTests.swift */,
+			);
+			path = PapyroTests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		3200FBD69376141E779AEC44 /* Papyro */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5D391A081230475E56A13C66 /* Build configuration list for PBXNativeTarget "Papyro" */;
+			buildPhases = (
+				52BD640A76AE3057D35F9077 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Papyro;
+			packageProductDependencies = (
+			);
+			productName = Papyro;
+			productReference = 77805105CEDE1F8E7CD1C0D7 /* Papyro.app */;
+			productType = "com.apple.product-type.application";
+		};
+		ED56DEA936DE198FA049EF22 /* PapyroTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0C2555AD074B9BD62266F7BA /* Build configuration list for PBXNativeTarget "PapyroTests" */;
+			buildPhases = (
+				AB9E7C806791BFDE22465750 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				59B642454228158CC4369314 /* PBXTargetDependency */,
+			);
+			name = PapyroTests;
+			packageProductDependencies = (
+			);
+			productName = PapyroTests;
+			productReference = 912C7E378D53C7A5731D3CDF /* PapyroTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BC5456D28E60D20546816EA4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = 9A814B7FC9770AB8A1685299 /* Build configuration list for PBXProject "Papyro" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 3D709BC8EF9E5E26DB9197AA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 08A3B5FCBF00513059B41F33 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				3200FBD69376141E779AEC44 /* Papyro */,
+				ED56DEA936DE198FA049EF22 /* PapyroTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		52BD640A76AE3057D35F9077 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AB9E7C806791BFDE22465750 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				449098AD804296E861DDEC3B /* PapyroTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		59B642454228158CC4369314 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 3200FBD69376141E779AEC44 /* Papyro */;
+			targetProxy = DDE031B62D7D376F8AEAC0DF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		61C4D01D893A07EC527B674B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedByXcode;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.allgemeiner-intellekt.Papyro";
+				PRODUCT_NAME = Papyro;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		6F172CFEB7384C3D6306372C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.allgemeiner-intellekt.PapyroTests";
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Papyro.app/Contents/MacOS/Papyro";
+			};
+			name = Release;
+		};
+		73BE59DDDEE653866FC97070 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@loader_path/../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.allgemeiner-intellekt.PapyroTests";
+				SDKROOT = macosx;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Papyro.app/Contents/MacOS/Papyro";
+			};
+			name = Debug;
+		};
+		76BFD7D2C0A5D5E2F8CE0F77 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Release;
+		};
+		A6431C268F44FB7FFFFB60B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_GENERATION_MODE = GeneratedByXcode;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 0.1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.allgemeiner-intellekt.Papyro";
+				PRODUCT_NAME = Papyro;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		CB75197B71D4FB4F91CE6776 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 6.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0C2555AD074B9BD62266F7BA /* Build configuration list for PBXNativeTarget "PapyroTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				73BE59DDDEE653866FC97070 /* Debug */,
+				6F172CFEB7384C3D6306372C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		5D391A081230475E56A13C66 /* Build configuration list for PBXNativeTarget "Papyro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A6431C268F44FB7FFFFB60B1 /* Debug */,
+				61C4D01D893A07EC527B674B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		9A814B7FC9770AB8A1685299 /* Build configuration list for PBXProject "Papyro" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CB75197B71D4FB4F91CE6776 /* Debug */,
+				76BFD7D2C0A5D5E2F8CE0F77 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BC5456D28E60D20546816EA4 /* Project object */;
+}

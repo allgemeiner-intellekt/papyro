@@ -1,0 +1,38 @@
+name: Papyro
+options:
+  bundleIdPrefix: com.allgemeiner-intellekt
+  deploymentTarget:
+    macOS: "15.0"
+  xcodeVersion: "16.0"
+  generateEmptyDirectories: true
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "15.0"
+targets:
+  Papyro:
+    type: application
+    platform: macOS
+    sources:
+      - Papyro
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.allgemeiner-intellekt.Papyro
+        PRODUCT_NAME: Papyro
+        GENERATE_INFOPLIST_FILE: "YES"
+        INFOPLIST_GENERATION_MODE: GeneratedByXcode
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+  PapyroTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - PapyroTests
+    dependencies:
+      - target: Papyro
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.allgemeiner-intellekt.PapyroTests
+        GENERATE_INFOPLIST_FILE: "YES"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/Papyro.app/Contents/MacOS/Papyro"
+        BUNDLE_LOADER: "$(TEST_HOST)"
