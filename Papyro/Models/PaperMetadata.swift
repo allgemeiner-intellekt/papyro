@@ -18,6 +18,13 @@ struct ParsedIdentifiers: Sendable {
     var pmid: String?
     var isbn: String?
 
+    init(doi: String? = nil, arxivId: String? = nil, pmid: String? = nil, isbn: String? = nil) {
+        self.doi = doi
+        self.arxivId = arxivId
+        self.pmid = pmid
+        self.isbn = isbn
+    }
+
     var bestIdentifier: String? {
         doi ?? arxivId ?? pmid ?? isbn
     }
