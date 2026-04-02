@@ -16,6 +16,7 @@
 		52DB4C091DF24E52CFF764CC /* LibraryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */; };
 		5E76603522514850231A7513 /* SemanticScholarProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A477238CB647625010D6AB47 /* SemanticScholarProvider.swift */; };
 		627423BE04F642376F255E8F /* CrossRefProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE54B388993575DF40E5F8DA /* CrossRefProvider.swift */; };
+		63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */; };
 		63AE594589C29B477AFD2AED /* LibraryConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */; };
 		6E2CADF80197570ACD684891 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172241C07BD1391037A63260 /* AppState.swift */; };
 		6F129F8EE62A52E1E70D8B4B /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9746654F87B517A2AC26E87C /* WelcomeView.swift */; };
@@ -72,6 +73,7 @@
 		A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PapyroApp.swift; sourceTree = "<group>"; };
 		A73E2411075E7CC3C1146977 /* SidebarCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarCategory.swift; sourceTree = "<group>"; };
 		B19401F37547D61F3929C138 /* ImportCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinator.swift; sourceTree = "<group>"; };
+		B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperRowView.swift; sourceTree = "<group>"; };
 		D27710A85129BE25D8A4FDDF /* TextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractor.swift; sourceTree = "<group>"; };
 		D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryConfigTests.swift; sourceTree = "<group>"; };
 		D9721DDADC1DD04AC410A351 /* FileServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileServiceTests.swift; sourceTree = "<group>"; };
@@ -118,6 +120,7 @@
 				275F4EDE961A70E2985A5397 /* DetailView.swift */,
 				452366A8585AE43A4C7741D2 /* MainView.swift */,
 				739EF212CF15925716D4EC17 /* PaperListView.swift */,
+				B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */,
 				5BEC69C456F1220512522FC5 /* SidebarView.swift */,
 				9746654F87B517A2AC26E87C /* WelcomeView.swift */,
 			);
@@ -256,6 +259,7 @@
 				D39C0E7DE291C86A03A9EF31 /* Paper.swift in Sources */,
 				9D490A2E8F9B00121FD8A063 /* PaperListView.swift in Sources */,
 				DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */,
+				63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */,
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
 				5E76603522514850231A7513 /* SemanticScholarProvider.swift in Sources */,
 				EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */,
