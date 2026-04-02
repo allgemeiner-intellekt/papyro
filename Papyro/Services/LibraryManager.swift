@@ -5,7 +5,7 @@ class LibraryManager {
     private let appState: AppState
     private let fileManager = FileManager.default
 
-    private let subdirectories = ["papers", "metadata", "notes", "views"]
+    private let subdirectories = ["papers", "index", "notes", ".symlinks", ".cache/text", "templates"]
 
     init(appState: AppState) {
         self.appState = appState
@@ -21,7 +21,7 @@ class LibraryManager {
         }
 
         // Write config.json
-        let config = LibraryConfig(version: 1, libraryPath: path.path)
+        let config = LibraryConfig(version: 1, libraryPath: path.path, translationServerURL: nil)
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
         let data = try encoder.encode(config)

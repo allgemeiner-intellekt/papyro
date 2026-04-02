@@ -20,9 +20,11 @@ struct LibraryManagerTests {
         // Verify folders exist
         let fm = FileManager.default
         #expect(fm.fileExists(atPath: tempDir.appendingPathComponent("papers").path))
-        #expect(fm.fileExists(atPath: tempDir.appendingPathComponent("metadata").path))
+        #expect(fm.fileExists(atPath: tempDir.appendingPathComponent("index").path))
         #expect(fm.fileExists(atPath: tempDir.appendingPathComponent("notes").path))
-        #expect(fm.fileExists(atPath: tempDir.appendingPathComponent("views").path))
+        #expect(fm.fileExists(atPath: tempDir.appendingPathComponent(".symlinks").path))
+        #expect(fm.fileExists(atPath: tempDir.appendingPathComponent(".cache/text").path))
+        #expect(fm.fileExists(atPath: tempDir.appendingPathComponent("templates").path))
 
         // Verify config.json exists and is valid
         let configURL = tempDir.appendingPathComponent("config.json")
@@ -32,6 +34,7 @@ struct LibraryManagerTests {
         let config = try JSONDecoder().decode(LibraryConfig.self, from: data)
         #expect(config.version == 1)
         #expect(config.libraryPath == tempDir.path)
+        #expect(config.translationServerURL == nil)
 
         // Verify app state was updated
         #expect(appState.isOnboarding == false)
