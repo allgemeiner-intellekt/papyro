@@ -7,8 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		16DE6310023701284FA2747D /* LibraryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DA00819856E73CE52AF240 /* LibraryConfig.swift */; };
 		4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */; };
 		449098AD804296E861DDEC3B /* PapyroTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A50C336BBC40CF8F7CE556D /* PapyroTests.swift */; };
+		52DB4C091DF24E52CFF764CC /* LibraryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */; };
+		63AE594589C29B477AFD2AED /* LibraryConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */; };
+		6E2CADF80197570ACD684891 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172241C07BD1391037A63260 /* AppState.swift */; };
+		92FA9586FD273C216ECEA8A6 /* LibraryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */; };
+		EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E2411075E7CC3C1146977 /* SidebarCategory.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -22,10 +28,16 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		172241C07BD1391037A63260 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		2A50C336BBC40CF8F7CE556D /* PapyroTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PapyroTests.swift; sourceTree = "<group>"; };
+		54DA00819856E73CE52AF240 /* LibraryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryConfig.swift; sourceTree = "<group>"; };
+		6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryManagerTests.swift; sourceTree = "<group>"; };
+		73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryManager.swift; sourceTree = "<group>"; };
 		77805105CEDE1F8E7CD1C0D7 /* Papyro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Papyro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		912C7E378D53C7A5731D3CDF /* PapyroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PapyroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PapyroApp.swift; sourceTree = "<group>"; };
+		A73E2411075E7CC3C1146977 /* SidebarCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarCategory.swift; sourceTree = "<group>"; };
+		D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryConfigTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -51,6 +63,8 @@
 			isa = PBXGroup;
 			children = (
 				A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */,
+				E775C52FBE2EB1BBF078C01F /* Models */,
+				E72AA17CD4538D4531CEFC8A /* Services */,
 			);
 			path = Papyro;
 			sourceTree = "<group>";
@@ -58,9 +72,29 @@
 		D70123C1A100F0385F166B6D /* PapyroTests */ = {
 			isa = PBXGroup;
 			children = (
+				D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */,
+				6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */,
 				2A50C336BBC40CF8F7CE556D /* PapyroTests.swift */,
 			);
 			path = PapyroTests;
+			sourceTree = "<group>";
+		};
+		E72AA17CD4538D4531CEFC8A /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		E775C52FBE2EB1BBF078C01F /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				172241C07BD1391037A63260 /* AppState.swift */,
+				54DA00819856E73CE52AF240 /* LibraryConfig.swift */,
+				A73E2411075E7CC3C1146977 /* SidebarCategory.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -137,7 +171,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6E2CADF80197570ACD684891 /* AppState.swift in Sources */,
+				16DE6310023701284FA2747D /* LibraryConfig.swift in Sources */,
+				52DB4C091DF24E52CFF764CC /* LibraryManager.swift in Sources */,
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
+				EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -145,6 +183,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				63AE594589C29B477AFD2AED /* LibraryConfigTests.swift in Sources */,
+				92FA9586FD273C216ECEA8A6 /* LibraryManagerTests.swift in Sources */,
 				449098AD804296E861DDEC3B /* PapyroTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

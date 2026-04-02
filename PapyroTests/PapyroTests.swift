@@ -1,7 +1,1 @@
-import Testing
-
-struct PapyroTests {
-    @Test func placeholder() async throws {
-        #expect(true)
-    }
-}
+// Placeholder removed — see LibraryManagerTests.swift and LibraryConfigTests.swift
