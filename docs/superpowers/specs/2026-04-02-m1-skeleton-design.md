@@ -35,6 +35,8 @@ Enum representing the sidebar view switcher items.
 
 ```swift
 enum SidebarCategory: String, CaseIterable, Identifiable {
+    var id: String { rawValue }
+
     case all            // "All Papers"
     case byProject      // "By Project"
     case byTopic        // "By Topic"
