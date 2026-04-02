@@ -11,7 +11,7 @@ class LibraryManager {
         self.appState = appState
     }
 
-    func setupLibrary(at path: URL) throws {
+    func setupLibrary(at path: URL, using defaults: UserDefaults = .standard) throws {
         // Create subdirectories
         for subdir in subdirectories {
             try fileManager.createDirectory(
@@ -28,7 +28,7 @@ class LibraryManager {
         try data.write(to: path.appendingPathComponent("config.json"))
 
         // Save to UserDefaults
-        UserDefaults.standard.set(path.path, forKey: "libraryPath")
+        defaults.set(path.path, forKey: "libraryPath")
 
         // Update app state
         appState.libraryConfig = config

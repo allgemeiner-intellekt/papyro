@@ -8,10 +8,14 @@ struct LibraryManagerTests {
             .appendingPathComponent("PapyroTest-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: tempDir) }
 
+        let suiteName = "PapyroTest-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suiteName)!
+        defer { defaults.removePersistentDomain(forName: suiteName) }
+
         let appState = AppState()
         let manager = LibraryManager(appState: appState)
 
-        try manager.setupLibrary(at: tempDir)
+        try manager.setupLibrary(at: tempDir, using: defaults)
 
         // Verify folders exist
         let fm = FileManager.default
@@ -56,8 +60,11 @@ struct LibraryManagerTests {
         let appState = AppState()
         let manager = LibraryManager(appState: appState)
 
-        // Set up a library first
-        try manager.setupLibrary(at: tempDir)
+        // Set up a library first (use a throwaway defaults for setup)
+        let setupSuiteName = "PapyroTest-\(UUID().uuidString)"
+        let setupDefaults = UserDefaults(suiteName: setupSuiteName)!
+        defer { setupDefaults.removePersistentDomain(forName: setupSuiteName) }
+        try manager.setupLibrary(at: tempDir, using: setupDefaults)
 
         // Reset state to simulate a fresh launch
         appState.isOnboarding = true
