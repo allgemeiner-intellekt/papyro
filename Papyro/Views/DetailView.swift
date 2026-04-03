@@ -26,6 +26,18 @@ struct DetailView: View {
                     } else {
                         headerSection(paper)
                         Divider()
+                        // Projects section
+                        ProjectChipsView(
+                            paper: paper,
+                            projects: coordinator.projectService.projects,
+                            onRemove: { project in
+                                coordinator.unassignPaperFromProject(paperId: paper.id, project: project)
+                            },
+                            onAdd: { project in
+                                coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                            }
+                        )
+                        Divider()
                         metadataSection(paper)
                         if let abstract = paper.abstract, !abstract.isEmpty {
                             Divider()
@@ -152,7 +164,25 @@ struct DetailView: View {
             MetadataRow(label: "arXiv ID", value: paper.arxivId)
             MetadataRow(label: "PMID", value: paper.pmid)
             MetadataRow(label: "ISBN", value: paper.isbn)
-            MetadataRow(label: "Status", value: paper.status.displayName)
+            HStack(alignment: .top) {
+                Text("Status")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 80, alignment: .trailing)
+
+                Picker("", selection: Binding(
+                    get: { paper.status },
+                    set: { newStatus in
+                        coordinator.updatePaperStatus(paperId: paper.id, status: newStatus)
+                    }
+                )) {
+                    Text("To Read").tag(ReadingStatus.toRead)
+                    Text("Reading").tag(ReadingStatus.reading)
+                    Text("Archived").tag(ReadingStatus.archived)
+                }
+                .labelsHidden()
+                .fixedSize()
+            }
             MetadataRow(label: "Source", value: paper.metadataSource.rawValue)
             MetadataRow(label: "Added", value: paper.dateAdded.formatted(date: .abbreviated, time: .omitted))
             MetadataRow(label: "File", value: paper.pdfFilename)

@@ -46,6 +46,7 @@
 		FB4685DB4F1D81A0540D5C72 /* IndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */; };
 		CFD3A612789F4BB5A36F85B6 /* ProjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2E1CE7ECDA40C5909754EB /* ProjectService.swift */; };
 		2F1EFB32C84C469CBFBDBCCC /* ProjectServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */; };
+		13DF90BD37D14E4DA27E0EED /* ProjectChipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3BFC92E99B4A6BAA4B9B76 /* ProjectChipsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +101,7 @@
 		E6DBDF3669E73FF302194E21 /* PaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperTests.swift; sourceTree = "<group>"; };
 		2E2E1CE7ECDA40C5909754EB /* ProjectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectService.swift; sourceTree = "<group>"; };
 		F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectServiceTests.swift; sourceTree = "<group>"; };
+		4C3BFC92E99B4A6BAA4B9B76 /* ProjectChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectChipsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -139,6 +141,7 @@
 				452366A8585AE43A4C7741D2 /* MainView.swift */,
 				739EF212CF15925716D4EC17 /* PaperListView.swift */,
 				B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */,
+				4C3BFC92E99B4A6BAA4B9B76 /* ProjectChipsView.swift */,
 				5BEC69C456F1220512522FC5 /* SidebarView.swift */,
 				9746654F87B517A2AC26E87C /* WelcomeView.swift */,
 			);
@@ -290,6 +293,7 @@
 				CFD3A612789F4BB5A36F85B6 /* ProjectService.swift in Sources */,
 				DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */,
 				63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */,
+				13DF90BD37D14E4DA27E0EED /* ProjectChipsView.swift in Sources */,
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
 				5E76603522514850231A7513 /* SemanticScholarProvider.swift in Sources */,
 				FCC7EE5C9487490D885B9ED5 /* SymlinkService.swift in Sources */,
