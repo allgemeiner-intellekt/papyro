@@ -38,6 +38,8 @@
 		DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */; };
 		297174F53086436EB72F1E31 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C88D19A2BF84EE3A0ACC199 /* Project.swift */; };
 		01964181FBAD40F29881E967 /* ProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128790C632414A34AEBFE78D /* ProjectTests.swift */; };
+		FCC7EE5C9487490D885B9ED5 /* SymlinkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4394B1F3326147109869AFFB /* SymlinkService.swift */; };
+		29DA84B1368A41D795D71DD4 /* SymlinkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A2E4B393074397B21AB665 /* SymlinkServiceTests.swift */; };
 		EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E2411075E7CC3C1146977 /* SidebarCategory.swift */; };
 		F34E149EA7959B0F9F784DD4 /* IndexServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4215939B6D341C8E80B4312C /* IndexServiceTests.swift */; };
 		FB4685DB4F1D81A0540D5C72 /* IndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */; };
@@ -89,6 +91,8 @@
 		DE54B388993575DF40E5F8DA /* CrossRefProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossRefProvider.swift; sourceTree = "<group>"; };
 		E2CAE29C21CABA7AB9290604 /* FallbackMetadataProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallbackMetadataProviderTests.swift; sourceTree = "<group>"; };
 		E5E7F4EF35D29CB88694026F /* ImportCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinatorTests.swift; sourceTree = "<group>"; };
+		4394B1F3326147109869AFFB /* SymlinkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymlinkService.swift; sourceTree = "<group>"; };
+		94A2E4B393074397B21AB665 /* SymlinkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymlinkServiceTests.swift; sourceTree = "<group>"; };
 		E6DBDF3669E73FF302194E21 /* PaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -147,6 +151,7 @@
 				6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */,
 				E6DBDF3669E73FF302194E21 /* PaperTests.swift */,
 				128790C632414A34AEBFE78D /* ProjectTests.swift */,
+				94A2E4B393074397B21AB665 /* SymlinkServiceTests.swift */,
 				63E3F95A82BB697D90277F44 /* TextExtractorTests.swift */,
 			);
 			path = PapyroTests;
@@ -164,6 +169,7 @@
 				73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */,
 				261260533852D188CFD9AE05 /* MetadataProvider.swift */,
 				A477238CB647625010D6AB47 /* SemanticScholarProvider.swift */,
+				4394B1F3326147109869AFFB /* SymlinkService.swift */,
 				D27710A85129BE25D8A4FDDF /* TextExtractor.swift */,
 				DBBA0D6387E4919188A5BADF /* TranslationServerProvider.swift */,
 			);
@@ -277,6 +283,7 @@
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
 				5E76603522514850231A7513 /* SemanticScholarProvider.swift in Sources */,
 				EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */,
+				FCC7EE5C9487490D885B9ED5 /* SymlinkService.swift in Sources */,
 				A3BCB5FC6C0862A446EA8197 /* SidebarView.swift in Sources */,
 				A12210850766FC9BF3A8C544 /* TextExtractor.swift in Sources */,
 				B2F59B298CD5FD0A04244E4A /* TranslationServerProvider.swift in Sources */,
@@ -297,6 +304,7 @@
 				92FA9586FD273C216ECEA8A6 /* LibraryManagerTests.swift in Sources */,
 				1503CF399738BB43C8B58367 /* PaperTests.swift in Sources */,
 				01964181FBAD40F29881E967 /* ProjectTests.swift in Sources */,
+				29DA84B1368A41D795D71DD4 /* SymlinkServiceTests.swift in Sources */,
 				7B35EC4AE92E02879A635CE4 /* TextExtractorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
