@@ -36,6 +36,8 @@
 		B2F59B298CD5FD0A04244E4A /* TranslationServerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBA0D6387E4919188A5BADF /* TranslationServerProvider.swift */; };
 		D39C0E7DE291C86A03A9EF31 /* Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4933E4C5E3BD5CA290238F /* Paper.swift */; };
 		DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */; };
+		297174F53086436EB72F1E31 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C88D19A2BF84EE3A0ACC199 /* Project.swift */; };
+		01964181FBAD40F29881E967 /* ProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128790C632414A34AEBFE78D /* ProjectTests.swift */; };
 		EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E2411075E7CC3C1146977 /* SidebarCategory.swift */; };
 		F34E149EA7959B0F9F784DD4 /* IndexServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4215939B6D341C8E80B4312C /* IndexServiceTests.swift */; };
 		FB4685DB4F1D81A0540D5C72 /* IndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */; };
@@ -59,6 +61,8 @@
 		261260533852D188CFD9AE05 /* MetadataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetadataProvider.swift; sourceTree = "<group>"; };
 		275F4EDE961A70E2985A5397 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		2F4933E4C5E3BD5CA290238F /* Paper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paper.swift; sourceTree = "<group>"; };
+		5C88D19A2BF84EE3A0ACC199 /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		128790C632414A34AEBFE78D /* ProjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTests.swift; sourceTree = "<group>"; };
 		4215939B6D341C8E80B4312C /* IndexServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexServiceTests.swift; sourceTree = "<group>"; };
 		452366A8585AE43A4C7741D2 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		54DA00819856E73CE52AF240 /* LibraryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryConfig.swift; sourceTree = "<group>"; };
@@ -142,6 +146,7 @@
 				D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */,
 				6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */,
 				E6DBDF3669E73FF302194E21 /* PaperTests.swift */,
+				128790C632414A34AEBFE78D /* ProjectTests.swift */,
 				63E3F95A82BB697D90277F44 /* TextExtractorTests.swift */,
 			);
 			path = PapyroTests;
@@ -172,6 +177,7 @@
 				54DA00819856E73CE52AF240 /* LibraryConfig.swift */,
 				2F4933E4C5E3BD5CA290238F /* Paper.swift */,
 				DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */,
+				5C88D19A2BF84EE3A0ACC199 /* Project.swift */,
 				A73E2411075E7CC3C1146977 /* SidebarCategory.swift */,
 			);
 			path = Models;
@@ -265,6 +271,7 @@
 				94DFDCA77A8BE173BE1CE4EA /* MetadataProvider.swift in Sources */,
 				D39C0E7DE291C86A03A9EF31 /* Paper.swift in Sources */,
 				9D490A2E8F9B00121FD8A063 /* PaperListView.swift in Sources */,
+				297174F53086436EB72F1E31 /* Project.swift in Sources */,
 				DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */,
 				63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */,
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
@@ -289,6 +296,7 @@
 				63AE594589C29B477AFD2AED /* LibraryConfigTests.swift in Sources */,
 				92FA9586FD273C216ECEA8A6 /* LibraryManagerTests.swift in Sources */,
 				1503CF399738BB43C8B58367 /* PaperTests.swift in Sources */,
+				01964181FBAD40F29881E967 /* ProjectTests.swift in Sources */,
 				7B35EC4AE92E02879A635CE4 /* TextExtractorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
