@@ -26,6 +26,17 @@ struct DetailView: View {
                     } else {
                         headerSection(paper)
                         Divider()
+                        ProjectChipsView(
+                            paper: paper,
+                            projects: coordinator.projectService.projects,
+                            onRemove: { project in
+                                coordinator.unassignPaperFromProject(paperId: paper.id, project: project)
+                            },
+                            onAdd: { project in
+                                coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                            }
+                        )
+                        Divider()
                         metadataSection(paper)
                         if let abstract = paper.abstract, !abstract.isEmpty {
                             Divider()
@@ -152,8 +163,26 @@ struct DetailView: View {
             MetadataRow(label: "arXiv ID", value: paper.arxivId)
             MetadataRow(label: "PMID", value: paper.pmid)
             MetadataRow(label: "ISBN", value: paper.isbn)
-            MetadataRow(label: "Status", value: paper.status.displayName)
-            MetadataRow(label: "Source", value: paper.metadataSource.rawValue)
+            HStack(alignment: .top) {
+                Text("Status")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .frame(width: 80, alignment: .trailing)
+
+                Picker("", selection: Binding(
+                    get: { paper.status },
+                    set: { newStatus in
+                        coordinator.updatePaperStatus(paperId: paper.id, status: newStatus)
+                    }
+                )) {
+                    ForEach(ReadingStatus.allCases, id: \.self) { status in
+                        Text(status.displayName).tag(status)
+                    }
+                }
+                .labelsHidden()
+                .fixedSize()
+            }
+            MetadataRow(label: "Source", value: metadataSourceLabel(for: paper.metadataSource))
             MetadataRow(label: "Added", value: paper.dateAdded.formatted(date: .abbreviated, time: .omitted))
             MetadataRow(label: "File", value: paper.pdfFilename)
         }
@@ -219,6 +248,16 @@ struct DetailView: View {
         let pdfURL = URL(fileURLWithPath: config.libraryPath)
             .appendingPathComponent(paper.pdfPath)
         NSWorkspace.shared.activateFileViewerSelecting([pdfURL])
+    }
+
+    private func metadataSourceLabel(for source: MetadataSource) -> String {
+        switch source {
+        case .translationServer: "Translation Server"
+        case .crossRef: "Crossref"
+        case .semanticScholar: "Semantic Scholar"
+        case .manual: "Manual"
+        case .none: "None"
+        }
     }
 }
 

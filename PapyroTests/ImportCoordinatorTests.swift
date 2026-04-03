@@ -3,6 +3,7 @@ import Testing
 import Foundation
 @testable import Papyro
 
+@MainActor
 struct ImportCoordinatorTests {
 
     private func makeTempLibrary() throws -> URL {
@@ -12,6 +13,8 @@ struct ImportCoordinatorTests {
         for subdir in subdirs {
             try fm.createDirectory(at: dir.appendingPathComponent(subdir), withIntermediateDirectories: true)
         }
+        let projectService = ProjectService(libraryRoot: dir)
+        try projectService.initialize()
         return dir
     }
 
@@ -37,10 +40,12 @@ struct ImportCoordinatorTests {
             url: nil,
             source: .translationServer
         )
+        let projectService = try makeProjectService(for: libRoot)
 
-        let coordinator = await ImportCoordinator(
+        let coordinator = ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()
@@ -48,21 +53,24 @@ struct ImportCoordinatorTests {
 
         await coordinator.importPDFs([sourcePDF])
 
-        let papers = await coordinator.papers
+        let papers = coordinator.papers
         #expect(papers.count == 1)
 
         let paper = papers[0]
+        let inboxID = projectService.inbox.id
         #expect(paper.title == "Attention Is All You Need")
         #expect(paper.authors == ["Vaswani, Ashish", "Shazeer, Noam"])
         #expect(paper.year == 2017)
         #expect(paper.metadataResolved == true)
         #expect(paper.importState == .resolved)
+        #expect(paper.projectIDs == [inboxID])
 
         // Verify PDF exists in papers/
         let pdfURL = libRoot.appendingPathComponent(paper.pdfPath)
         #expect(FileManager.default.fileExists(atPath: pdfURL.path))
         #expect(paper.pdfFilename.contains("vaswani"))
         #expect(paper.pdfFilename.contains("2017"))
+        #expect(FileManager.default.fileExists(atPath: libRoot.appendingPathComponent(".symlinks/inbox/\(paper.pdfFilename)").path))
 
         // Verify index JSON was written
         let indexFile = libRoot.appendingPathComponent("index/\(paper.id.uuidString).json")
@@ -80,10 +88,12 @@ struct ImportCoordinatorTests {
         let mock = MockMetadataProvider()
         mock.metadataToReturn = nil
         mock.searchResult = nil
+        let projectService = try makeProjectService(for: libRoot)
 
-        let coordinator = await ImportCoordinator(
+        let coordinator = ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF(named: "mystery-paper.pdf")
@@ -91,7 +101,7 @@ struct ImportCoordinatorTests {
 
         await coordinator.importPDFs([sourcePDF])
 
-        let papers = await coordinator.papers
+        let papers = coordinator.papers
         #expect(papers.count == 1)
 
         let paper = papers[0]
@@ -117,10 +127,12 @@ struct ImportCoordinatorTests {
             url: nil,
             source: .translationServer
         )
+        let projectService = try makeProjectService(for: libRoot)
 
-        let coordinator = await ImportCoordinator(
+        let coordinator = ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let pdf1 = createDummyPDF(named: "paper1.pdf")
@@ -134,7 +146,7 @@ struct ImportCoordinatorTests {
 
         await coordinator.importPDFs([pdf1, pdf2, pdf3])
 
-        let papers = await coordinator.papers
+        let papers = coordinator.papers
         #expect(papers.count == 3)
     }
 
@@ -146,10 +158,12 @@ struct ImportCoordinatorTests {
         let mock = MockMetadataProvider()
         mock.metadataToReturn = nil
         mock.searchResult = nil
+        let projectService = try makeProjectService(for: libRoot)
 
-        let coordinator = await ImportCoordinator(
+        let coordinator = ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()
@@ -157,7 +171,7 @@ struct ImportCoordinatorTests {
 
         await coordinator.importPDFs([sourcePDF])
 
-        var papers = await coordinator.papers
+        var papers = coordinator.papers
         #expect(papers.count == 1)
         #expect(papers[0].importState == .unresolved)
 
@@ -178,7 +192,7 @@ struct ImportCoordinatorTests {
 
         await coordinator.retryMetadataLookup(for: paperId)
 
-        papers = await coordinator.papers
+        papers = coordinator.papers
         let paper = papers.first { $0.id == paperId }!
         #expect(paper.importState == .resolved)
         #expect(paper.title == "Retry Success")
@@ -192,10 +206,12 @@ struct ImportCoordinatorTests {
         let mock = MockMetadataProvider()
         mock.metadataToReturn = nil
         mock.searchResult = nil
+        let projectService = try makeProjectService(for: libRoot)
 
-        let coordinator = await ImportCoordinator(
+        let coordinator = ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()
@@ -203,13 +219,13 @@ struct ImportCoordinatorTests {
 
         await coordinator.importPDFs([sourcePDF])
 
-        var papers = await coordinator.papers
+        var papers = coordinator.papers
         let paperId = papers[0].id
 
         // Retry still fails
         await coordinator.retryMetadataLookup(for: paperId)
 
-        papers = await coordinator.papers
+        papers = coordinator.papers
         #expect(papers[0].importState == .unresolved)
     }
 
@@ -219,10 +235,12 @@ struct ImportCoordinatorTests {
 
         let mock = MockMetadataProvider()
         mock.metadataToReturn = nil
+        let projectService = try makeProjectService(for: libRoot)
 
-        let coordinator = await ImportCoordinator(
+        let coordinator = ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()
@@ -230,10 +248,10 @@ struct ImportCoordinatorTests {
 
         await coordinator.importPDFs([sourcePDF])
 
-        var papers = await coordinator.papers
+        var papers = coordinator.papers
         let paperId = papers[0].id
 
-        await coordinator.updatePaperMetadata(
+        coordinator.updatePaperMetadata(
             paperId: paperId,
             title: "Manually Edited Title",
             authors: ["Editor, Manual"],
@@ -243,12 +261,18 @@ struct ImportCoordinatorTests {
             abstract: "An abstract"
         )
 
-        papers = await coordinator.papers
+        papers = coordinator.papers
         let paper = papers.first { $0.id == paperId }!
         #expect(paper.title == "Manually Edited Title")
         #expect(paper.authors == ["Editor, Manual"])
         #expect(paper.year == 2025)
         #expect(paper.metadataSource == .manual)
         #expect(paper.importState == .resolved)
+    }
+
+    private func makeProjectService(for libraryRoot: URL) throws -> ProjectService {
+        let projectService = ProjectService(libraryRoot: libraryRoot)
+        try projectService.loadProjects()
+        return projectService
     }
 }

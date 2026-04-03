@@ -35,6 +35,13 @@ struct LibraryManagerTests {
         #expect(config.version == 1)
         #expect(config.libraryPath == tempDir.path)
         #expect(config.translationServerURL == nil)
+        #expect(config.visibleColumns != nil)
+        #expect(config.sortColumn == .dateAdded)
+        #expect(config.sortAscending == false)
+
+        let projectsURL = tempDir.appendingPathComponent("projects.json")
+        #expect(fm.fileExists(atPath: projectsURL.path))
+        #expect(fm.fileExists(atPath: tempDir.appendingPathComponent(".symlinks/inbox").path))
 
         // Verify app state was updated
         #expect(appState.isOnboarding == false)

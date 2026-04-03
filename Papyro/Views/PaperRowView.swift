@@ -2,85 +2,121 @@ import SwiftUI
 
 struct PaperRowView: View {
     let paper: Paper
+    let visibleColumns: Set<PaperColumn>
+    let projects: [Project]
 
     var body: some View {
-        HStack(spacing: 12) {
-            statusIcon
-                .frame(width: 20)
-
-            VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
                 Text(paper.title)
-                    .font(.headline)
-                    .lineLimit(1)
-
-                Text(subtitle)
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                    .font(.system(size: 13, weight: .semibold))
+                    .lineLimit(2)
+                Spacer(minLength: 0)
+                importStateBadge
             }
 
-            Spacer()
+            HStack(spacing: 0) {
+                Color.clear
+                    .frame(maxWidth: .infinity)
 
-            badge
+                ForEach(visibleColumnsInOrder, id: \.self) { column in
+                    columnValue(for: column)
+                        .frame(width: column.width, alignment: .leading)
+                }
+            }
+            .font(.system(size: 12))
+            .foregroundStyle(.secondary)
         }
         .padding(.vertical, 4)
     }
 
-    @ViewBuilder
-    private var statusIcon: some View {
-        switch paper.importState {
-        case .importing, .resolving:
-            ProgressView()
-                .controlSize(.small)
-        case .resolved:
-            Image(systemName: "checkmark.circle.fill")
-                .foregroundStyle(.green)
-        case .unresolved:
-            Image(systemName: "exclamationmark.circle.fill")
-                .foregroundStyle(.red)
-        }
+    private var visibleColumnsInOrder: [PaperColumn] {
+        PaperColumn.allCases.filter { visibleColumns.contains($0) }
     }
 
     @ViewBuilder
-    private var badge: some View {
+    private var importStateBadge: some View {
         switch paper.importState {
         case .importing:
             BadgeView(text: "Importing", color: .blue)
+                .fixedSize()
         case .resolving:
             BadgeView(text: "Resolving", color: .orange)
-        case .resolved:
-            BadgeView(text: paper.status.displayName, color: .blue)
+                .fixedSize()
         case .unresolved:
             BadgeView(text: "Unresolved", color: .red)
-        }
-    }
-
-    private var subtitle: String {
-        switch paper.importState {
-        case .importing:
-            "Importing..."
-        case .resolving:
-            paper.doi.map { "DOI: \($0) — Looking up metadata..." } ?? "Resolving..."
+                .fixedSize()
         case .resolved:
-            formatAuthors(paper.authors, year: paper.year, journal: paper.journal)
-        case .unresolved:
-            "Could not resolve metadata"
+            EmptyView()
         }
     }
 
-    private func formatAuthors(_ authors: [String], year: Int?, journal: String?) -> String {
-        var parts: [String] = []
-        if let firstAuthor = authors.first {
-            let surname = firstAuthor.components(separatedBy: ",").first ?? firstAuthor
-            parts.append(authors.count > 1 ? "\(surname) et al." : surname)
+    @ViewBuilder
+    private func columnValue(for column: PaperColumn) -> some View {
+        switch column {
+        case .authors:
+            Text(formatAuthors(paper.authors))
+                .lineLimit(1)
+        case .year:
+            Text(paper.year.map(String.init) ?? "—")
+        case .journal:
+            Text(paper.journal ?? "—")
+                .lineLimit(1)
+        case .status:
+            BadgeView(text: paper.status.displayName, color: paper.status.color)
+                .fixedSize()
+        case .dateAdded:
+            Text(paper.dateAdded.formatted(date: .abbreviated, time: .omitted))
+                .lineLimit(1)
+        case .doi:
+            Text(paper.doi ?? "—")
+                .lineLimit(1)
+        case .arxivId:
+            Text(paper.arxivId ?? "—")
+                .lineLimit(1)
+        case .projects:
+            Text(projectNames)
+                .lineLimit(1)
+        case .metadataSource:
+            Text(metadataSourceLabel)
+                .lineLimit(1)
+        case .dateModified:
+            Text(paper.dateModified.formatted(date: .abbreviated, time: .omitted))
+                .lineLimit(1)
+        case .pmid:
+            Text(paper.pmid ?? "—")
+                .lineLimit(1)
+        case .isbn:
+            Text(paper.isbn ?? "—")
+                .lineLimit(1)
         }
-        if let year = year { parts.append(String(year)) }
-        if let journal = journal, !journal.isEmpty { parts.append(journal) }
-        return parts.joined(separator: " · ")
+    }
+
+    private var projectNames: String {
+        let names = paper.projectIDs.compactMap { id in
+            projects.first(where: { $0.id == id })?.name
+        }
+        return names.isEmpty ? "—" : names.joined(separator: ", ")
+    }
+
+    private var metadataSourceLabel: String {
+        switch paper.metadataSource {
+        case .translationServer: "Translation Server"
+        case .crossRef: "Crossref"
+        case .semanticScholar: "Semantic Scholar"
+        case .manual: "Manual"
+        case .none: "None"
+        }
+    }
+
+    private func formatAuthors(_ authors: [String]) -> String {
+        guard let firstAuthor = authors.first else { return "—" }
+        let surname = firstAuthor.components(separatedBy: ",").first ?? firstAuthor
+        return authors.count > 1 ? "\(surname) et al." : surname
     }
 }
 
-private struct BadgeView: View {
+struct BadgeView: View {
     let text: String
     let color: Color
 
@@ -102,6 +138,30 @@ extension ReadingStatus {
         case .toRead: "To Read"
         case .reading: "Reading"
         case .archived: "Archived"
+        }
+    }
+
+    var iconName: String {
+        switch self {
+        case .toRead: "circle.fill"
+        case .reading: "circle.dotted.circle"
+        case .archived: "checkmark.circle.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .toRead: .blue
+        case .reading: .orange
+        case .archived: .green
+        }
+    }
+
+    var sortOrder: Int {
+        switch self {
+        case .toRead: 0
+        case .reading: 1
+        case .archived: 2
         }
     }
 }

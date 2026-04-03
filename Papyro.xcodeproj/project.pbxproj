@@ -12,21 +12,30 @@
 		0EF1AD10B1431FCB43024501 /* IdentifierParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9797405ECDADDBE17F9F76B1 /* IdentifierParser.swift */; };
 		1503CF399738BB43C8B58367 /* PaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DBDF3669E73FF302194E21 /* PaperTests.swift */; };
 		16DE6310023701284FA2747D /* LibraryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DA00819856E73CE52AF240 /* LibraryConfig.swift */; };
+		1F7B3BEDC96C83B28C88376F /* SymlinkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF51B20986970EABA5015192 /* SymlinkService.swift */; };
+		334D9C61C4484D41988700DE /* ProjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3D78C56CFF51EFB0018843 /* ProjectService.swift */; };
+		34B1C95CBDD02B2BDC089E3E /* SymlinkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB11C2209E2730F9DB257B9 /* SymlinkServiceTests.swift */; };
 		4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */; };
+		4C74324858F0428B924F76EE /* ProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE319C20E597E8E34FDCA7C6 /* ProjectTests.swift */; };
 		4D737F16735924A6C094AF5B /* FileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05782C32F039B5DDB1819BC0 /* FileService.swift */; };
 		52DB4C091DF24E52CFF764CC /* LibraryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */; };
 		5E76603522514850231A7513 /* SemanticScholarProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = A477238CB647625010D6AB47 /* SemanticScholarProvider.swift */; };
+		61B837A0765A6B70C700A5CD /* ProjectServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6710BA1F3EFBF7C9A3133040 /* ProjectServiceTests.swift */; };
 		627423BE04F642376F255E8F /* CrossRefProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE54B388993575DF40E5F8DA /* CrossRefProvider.swift */; };
 		63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */; };
 		63AE594589C29B477AFD2AED /* LibraryConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */; };
 		6E2CADF80197570ACD684891 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172241C07BD1391037A63260 /* AppState.swift */; };
 		6F129F8EE62A52E1E70D8B4B /* WelcomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9746654F87B517A2AC26E87C /* WelcomeView.swift */; };
 		714DFEE6266E57DFA91B82B6 /* ImportCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5E7F4EF35D29CB88694026F /* ImportCoordinatorTests.swift */; };
+		74FD7556C3235BC07C8AC2B8 /* PaperColumn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522A3C633A7786DFFDE1FDF0 /* PaperColumn.swift */; };
 		77E77352249518E245CCA518 /* ImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = B19401F37547D61F3929C138 /* ImportCoordinator.swift */; };
 		7B35EC4AE92E02879A635CE4 /* TextExtractorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63E3F95A82BB697D90277F44 /* TextExtractorTests.swift */; };
 		7DC679C915DD8F5F8082A3CF /* FileServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9721DDADC1DD04AC410A351 /* FileServiceTests.swift */; };
+		81068C2A6DEE6C1A4EE7DBA0 /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = C209351634492F96A09ECE8A /* Project.swift */; };
+		8DA84AC94471D88E2A041C72 /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FA94315E6F791444D6D6891 /* SidebarItem.swift */; };
 		92FA9586FD273C216ECEA8A6 /* LibraryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */; };
 		94DFDCA77A8BE173BE1CE4EA /* MetadataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 261260533852D188CFD9AE05 /* MetadataProvider.swift */; };
+		97D0872CCAAF1DDC235EE05A /* ProjectChipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17FD1881F1FA75CB092AB21 /* ProjectChipsView.swift */; };
 		9CE48DBC792584BA1D4A4AC1 /* FallbackMetadataProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA9C8B8548DF1273C90A79F /* FallbackMetadataProvider.swift */; };
 		9D490A2E8F9B00121FD8A063 /* PaperListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 739EF212CF15925716D4EC17 /* PaperListView.swift */; };
 		A12210850766FC9BF3A8C544 /* TextExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27710A85129BE25D8A4FDDF /* TextExtractor.swift */; };
@@ -36,7 +45,6 @@
 		B2F59B298CD5FD0A04244E4A /* TranslationServerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBA0D6387E4919188A5BADF /* TranslationServerProvider.swift */; };
 		D39C0E7DE291C86A03A9EF31 /* Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4933E4C5E3BD5CA290238F /* Paper.swift */; };
 		DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */; };
-		EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E2411075E7CC3C1146977 /* SidebarCategory.swift */; };
 		F34E149EA7959B0F9F784DD4 /* IndexServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4215939B6D341C8E80B4312C /* IndexServiceTests.swift */; };
 		FB4685DB4F1D81A0540D5C72 /* IndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */; };
 /* End PBXBuildFile section */
@@ -61,31 +69,39 @@
 		2F4933E4C5E3BD5CA290238F /* Paper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Paper.swift; sourceTree = "<group>"; };
 		4215939B6D341C8E80B4312C /* IndexServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IndexServiceTests.swift; sourceTree = "<group>"; };
 		452366A8585AE43A4C7741D2 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		522A3C633A7786DFFDE1FDF0 /* PaperColumn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperColumn.swift; sourceTree = "<group>"; };
 		54DA00819856E73CE52AF240 /* LibraryConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryConfig.swift; sourceTree = "<group>"; };
 		5BA9C8B8548DF1273C90A79F /* FallbackMetadataProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallbackMetadataProvider.swift; sourceTree = "<group>"; };
 		5BEC69C456F1220512522FC5 /* SidebarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarView.swift; sourceTree = "<group>"; };
 		63E3F95A82BB697D90277F44 /* TextExtractorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractorTests.swift; sourceTree = "<group>"; };
+		6710BA1F3EFBF7C9A3133040 /* ProjectServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectServiceTests.swift; sourceTree = "<group>"; };
 		6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryManagerTests.swift; sourceTree = "<group>"; };
+		6B3D78C56CFF51EFB0018843 /* ProjectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectService.swift; sourceTree = "<group>"; };
 		739EF212CF15925716D4EC17 /* PaperListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperListView.swift; sourceTree = "<group>"; };
 		73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryManager.swift; sourceTree = "<group>"; };
 		77805105CEDE1F8E7CD1C0D7 /* Papyro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Papyro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		912C7E378D53C7A5731D3CDF /* PapyroTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PapyroTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9746654F87B517A2AC26E87C /* WelcomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeView.swift; sourceTree = "<group>"; };
 		9797405ECDADDBE17F9F76B1 /* IdentifierParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifierParser.swift; sourceTree = "<group>"; };
+		9FA94315E6F791444D6D6891 /* SidebarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarItem.swift; sourceTree = "<group>"; };
 		A477238CB647625010D6AB47 /* SemanticScholarProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemanticScholarProvider.swift; sourceTree = "<group>"; };
 		A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PapyroApp.swift; sourceTree = "<group>"; };
-		A73E2411075E7CC3C1146977 /* SidebarCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarCategory.swift; sourceTree = "<group>"; };
+		AE319C20E597E8E34FDCA7C6 /* ProjectTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectTests.swift; sourceTree = "<group>"; };
+		AF51B20986970EABA5015192 /* SymlinkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymlinkService.swift; sourceTree = "<group>"; };
 		B19401F37547D61F3929C138 /* ImportCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinator.swift; sourceTree = "<group>"; };
 		B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperRowView.swift; sourceTree = "<group>"; };
+		C209351634492F96A09ECE8A /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		D27710A85129BE25D8A4FDDF /* TextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractor.swift; sourceTree = "<group>"; };
 		D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryConfigTests.swift; sourceTree = "<group>"; };
 		D9721DDADC1DD04AC410A351 /* FileServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileServiceTests.swift; sourceTree = "<group>"; };
+		DBB11C2209E2730F9DB257B9 /* SymlinkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymlinkServiceTests.swift; sourceTree = "<group>"; };
 		DBBA0D6387E4919188A5BADF /* TranslationServerProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranslationServerProvider.swift; sourceTree = "<group>"; };
 		DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperMetadata.swift; sourceTree = "<group>"; };
 		DE54B388993575DF40E5F8DA /* CrossRefProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrossRefProvider.swift; sourceTree = "<group>"; };
 		E2CAE29C21CABA7AB9290604 /* FallbackMetadataProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FallbackMetadataProviderTests.swift; sourceTree = "<group>"; };
 		E5E7F4EF35D29CB88694026F /* ImportCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinatorTests.swift; sourceTree = "<group>"; };
 		E6DBDF3669E73FF302194E21 /* PaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperTests.swift; sourceTree = "<group>"; };
+		F17FD1881F1FA75CB092AB21 /* ProjectChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectChipsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -125,6 +141,7 @@
 				452366A8585AE43A4C7741D2 /* MainView.swift */,
 				739EF212CF15925716D4EC17 /* PaperListView.swift */,
 				B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */,
+				F17FD1881F1FA75CB092AB21 /* ProjectChipsView.swift */,
 				5BEC69C456F1220512522FC5 /* SidebarView.swift */,
 				9746654F87B517A2AC26E87C /* WelcomeView.swift */,
 			);
@@ -142,6 +159,9 @@
 				D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */,
 				6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */,
 				E6DBDF3669E73FF302194E21 /* PaperTests.swift */,
+				6710BA1F3EFBF7C9A3133040 /* ProjectServiceTests.swift */,
+				AE319C20E597E8E34FDCA7C6 /* ProjectTests.swift */,
+				DBB11C2209E2730F9DB257B9 /* SymlinkServiceTests.swift */,
 				63E3F95A82BB697D90277F44 /* TextExtractorTests.swift */,
 			);
 			path = PapyroTests;
@@ -158,7 +178,9 @@
 				25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */,
 				73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */,
 				261260533852D188CFD9AE05 /* MetadataProvider.swift */,
+				6B3D78C56CFF51EFB0018843 /* ProjectService.swift */,
 				A477238CB647625010D6AB47 /* SemanticScholarProvider.swift */,
+				AF51B20986970EABA5015192 /* SymlinkService.swift */,
 				D27710A85129BE25D8A4FDDF /* TextExtractor.swift */,
 				DBBA0D6387E4919188A5BADF /* TranslationServerProvider.swift */,
 			);
@@ -171,8 +193,10 @@
 				172241C07BD1391037A63260 /* AppState.swift */,
 				54DA00819856E73CE52AF240 /* LibraryConfig.swift */,
 				2F4933E4C5E3BD5CA290238F /* Paper.swift */,
+				522A3C633A7786DFFDE1FDF0 /* PaperColumn.swift */,
 				DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */,
-				A73E2411075E7CC3C1146977 /* SidebarCategory.swift */,
+				C209351634492F96A09ECE8A /* Project.swift */,
+				9FA94315E6F791444D6D6891 /* SidebarItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -264,13 +288,18 @@
 				A37ADF65685C9E514D5654B1 /* MainView.swift in Sources */,
 				94DFDCA77A8BE173BE1CE4EA /* MetadataProvider.swift in Sources */,
 				D39C0E7DE291C86A03A9EF31 /* Paper.swift in Sources */,
+				74FD7556C3235BC07C8AC2B8 /* PaperColumn.swift in Sources */,
 				9D490A2E8F9B00121FD8A063 /* PaperListView.swift in Sources */,
 				DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */,
 				63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */,
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
+				81068C2A6DEE6C1A4EE7DBA0 /* Project.swift in Sources */,
+				97D0872CCAAF1DDC235EE05A /* ProjectChipsView.swift in Sources */,
+				334D9C61C4484D41988700DE /* ProjectService.swift in Sources */,
 				5E76603522514850231A7513 /* SemanticScholarProvider.swift in Sources */,
-				EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */,
+				8DA84AC94471D88E2A041C72 /* SidebarItem.swift in Sources */,
 				A3BCB5FC6C0862A446EA8197 /* SidebarView.swift in Sources */,
+				1F7B3BEDC96C83B28C88376F /* SymlinkService.swift in Sources */,
 				A12210850766FC9BF3A8C544 /* TextExtractor.swift in Sources */,
 				B2F59B298CD5FD0A04244E4A /* TranslationServerProvider.swift in Sources */,
 				6F129F8EE62A52E1E70D8B4B /* WelcomeView.swift in Sources */,
@@ -289,6 +318,9 @@
 				63AE594589C29B477AFD2AED /* LibraryConfigTests.swift in Sources */,
 				92FA9586FD273C216ECEA8A6 /* LibraryManagerTests.swift in Sources */,
 				1503CF399738BB43C8B58367 /* PaperTests.swift in Sources */,
+				61B837A0765A6B70C700A5CD /* ProjectServiceTests.swift in Sources */,
+				4C74324858F0428B924F76EE /* ProjectTests.swift in Sources */,
+				34B1C95CBDD02B2BDC089E3E /* SymlinkServiceTests.swift in Sources */,
 				7B35EC4AE92E02879A635CE4 /* TextExtractorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

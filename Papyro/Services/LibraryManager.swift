@@ -21,26 +21,40 @@ class LibraryManager {
         }
 
         // Write config.json
-        let config = LibraryConfig(version: 1, libraryPath: path.path, translationServerURL: nil)
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
+        let config = LibraryConfig(
+            version: 1,
+            libraryPath: path.path,
+            translationServerURL: nil,
+            visibleColumns: Array(PaperColumn.defaultVisible),
+            sortColumn: .dateAdded,
+            sortAscending: false
+        )
         let data = try encoder.encode(config)
         try data.write(to: path.appendingPathComponent("config.json"))
+
+        let projectService = ProjectService(libraryRoot: path)
+        try projectService.initialize()
 
         // Save to UserDefaults
         defaults.set(path.path, forKey: "libraryPath")
 
         // Update app state
         appState.libraryConfig = config
+        appState.visibleColumns = Set(config.visibleColumns ?? Array(PaperColumn.defaultVisible))
+        appState.sortColumn = config.sortColumn ?? .dateAdded
+        appState.sortAscending = config.sortAscending ?? false
         appState.isOnboarding = false
     }
 
     func loadLibrary(from path: URL) throws {
         let configURL = path.appendingPathComponent("config.json")
         let data = try Data(contentsOf: configURL)
-        let config = try JSONDecoder().decode(LibraryConfig.self, from: data)
+        let config = try decoder.decode(LibraryConfig.self, from: data)
 
         appState.libraryConfig = config
+        appState.visibleColumns = Set(config.visibleColumns ?? Array(PaperColumn.defaultVisible))
+        appState.sortColumn = config.sortColumn ?? .dateAdded
+        appState.sortAscending = config.sortAscending ?? false
         appState.isOnboarding = false
     }
 
@@ -63,5 +77,36 @@ class LibraryManager {
         } catch {
             return false
         }
+    }
+
+    func saveCurrentConfig() {
+        guard let existingConfig = appState.libraryConfig else { return }
+
+        let updatedConfig = LibraryConfig(
+            version: existingConfig.version,
+            libraryPath: existingConfig.libraryPath,
+            translationServerURL: existingConfig.translationServerURL,
+            visibleColumns: PaperColumn.allCases.filter { appState.visibleColumns.contains($0) },
+            sortColumn: appState.sortColumn,
+            sortAscending: appState.sortAscending
+        )
+
+        do {
+            let data = try encoder.encode(updatedConfig)
+            try data.write(to: URL(fileURLWithPath: updatedConfig.libraryPath).appendingPathComponent("config.json"), options: .atomic)
+            appState.libraryConfig = updatedConfig
+        } catch {
+            return
+        }
+    }
+
+    private var encoder: JSONEncoder {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return encoder
+    }
+
+    private var decoder: JSONDecoder {
+        JSONDecoder()
     }
 }

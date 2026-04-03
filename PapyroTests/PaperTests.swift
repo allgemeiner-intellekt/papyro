@@ -20,8 +20,7 @@ struct PaperTests {
             pdfPath: "papers/2024_smith_test-paper.pdf",
             pdfFilename: "2024_smith_test-paper.pdf",
             notePath: nil,
-            topics: [],
-            projects: [],
+            projectIDs: [],
             status: .toRead,
             dateAdded: Date(timeIntervalSince1970: 1712000000),
             dateModified: Date(timeIntervalSince1970: 1712000000),
@@ -49,6 +48,7 @@ struct PaperTests {
         #expect(decoded.metadataSource == .translationServer)
         #expect(decoded.metadataResolved == true)
         #expect(decoded.importState == .resolved)
+        #expect(decoded.projectIDs.isEmpty)
     }
 
     @Test func defaultsForUnresolvedPaper() throws {
@@ -68,8 +68,7 @@ struct PaperTests {
             pdfPath: "papers/some-uuid.pdf",
             pdfFilename: "some-uuid.pdf",
             notePath: nil,
-            topics: [],
-            projects: [],
+            projectIDs: [],
             status: .toRead,
             dateAdded: Date(),
             dateModified: Date(),
@@ -81,5 +80,43 @@ struct PaperTests {
         #expect(paper.metadataResolved == false)
         #expect(paper.importState == .unresolved)
         #expect(paper.authors.isEmpty)
+        #expect(paper.projectIDs.isEmpty)
+    }
+
+    @Test func decodesLegacyPaperWithoutProjectIDs() throws {
+        let json = """
+        {
+          "id": "12345678-1234-1234-1234-123456789abc",
+          "canonicalId": null,
+          "title": "Legacy Paper",
+          "authors": [],
+          "year": null,
+          "journal": null,
+          "doi": null,
+          "arxivId": null,
+          "pmid": null,
+          "isbn": null,
+          "abstract": null,
+          "url": null,
+          "pdfPath": "papers/legacy.pdf",
+          "pdfFilename": "legacy.pdf",
+          "notePath": null,
+          "topics": [],
+          "projects": [],
+          "status": "toRead",
+          "dateAdded": "2024-04-02T12:26:40Z",
+          "dateModified": "2024-04-02T12:26:40Z",
+          "metadataSource": "none",
+          "metadataResolved": false,
+          "importState": "unresolved"
+        }
+        """
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let decoded = try decoder.decode(Paper.self, from: Data(json.utf8))
+
+        #expect(decoded.title == "Legacy Paper")
+        #expect(decoded.projectIDs.isEmpty)
     }
 }

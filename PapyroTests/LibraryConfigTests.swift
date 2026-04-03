@@ -4,7 +4,14 @@ import Foundation
 
 struct LibraryConfigTests {
     @Test func encodesAndDecodesCorrectly() throws {
-        let config = LibraryConfig(version: 1, libraryPath: "/Users/test/ResearchLibrary", translationServerURL: "https://translate.example.com")
+        let config = LibraryConfig(
+            version: 1,
+            libraryPath: "/Users/test/ResearchLibrary",
+            translationServerURL: "https://translate.example.com",
+            visibleColumns: [.authors, .status],
+            sortColumn: .status,
+            sortAscending: true
+        )
 
         let encoder = JSONEncoder()
         encoder.outputFormatting = .prettyPrinted
@@ -16,6 +23,9 @@ struct LibraryConfigTests {
         #expect(decoded.version == 1)
         #expect(decoded.libraryPath == "/Users/test/ResearchLibrary")
         #expect(decoded.translationServerURL == "https://translate.example.com")
+        #expect(decoded.visibleColumns == [.authors, .status])
+        #expect(decoded.sortColumn == .status)
+        #expect(decoded.sortAscending == true)
     }
 
     @Test func decodesWithoutTranslationServerURL() throws {
@@ -28,5 +38,8 @@ struct LibraryConfigTests {
 
         #expect(decoded.version == 1)
         #expect(decoded.translationServerURL == nil)
+        #expect(decoded.visibleColumns == nil)
+        #expect(decoded.sortColumn == nil)
+        #expect(decoded.sortAscending == nil)
     }
 }

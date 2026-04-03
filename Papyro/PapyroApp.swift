@@ -26,8 +26,9 @@ struct PapyroApp: App {
             }
             .environment(appState)
             .environment(libraryManager)
-            .onChange(of: appState.libraryConfig) { _, newConfig in
-                if let config = newConfig {
+            .onChange(of: appState.libraryConfig?.libraryPath) { _, newLibraryPath in
+                if let newLibraryPath {
+                    let config = appState.libraryConfig ?? LibraryConfig(version: 1, libraryPath: newLibraryPath, translationServerURL: nil)
                     setupImportCoordinator(config: config)
                 }
             }
@@ -40,6 +41,16 @@ struct PapyroApp: App {
     private func setupImportCoordinator(config: LibraryConfig) {
         let libraryRoot = URL(fileURLWithPath: config.libraryPath)
 
+        if let columns = config.visibleColumns {
+            appState.visibleColumns = Set(columns)
+        }
+        if let sortColumn = config.sortColumn {
+            appState.sortColumn = sortColumn
+        }
+        if let sortAscending = config.sortAscending {
+            appState.sortAscending = sortAscending
+        }
+
         var providers: [MetadataProvider] = []
         if let serverURLString = config.translationServerURL,
            let serverURL = URL(string: serverURLString) {
@@ -48,10 +59,18 @@ struct PapyroApp: App {
         providers.append(CrossRefProvider())
         providers.append(SemanticScholarProvider())
         let metadataProvider: MetadataProvider = FallbackMetadataProvider(providers: providers)
+        let projectService = ProjectService(libraryRoot: libraryRoot)
+
+        if FileManager.default.fileExists(atPath: libraryRoot.appendingPathComponent("projects.json").path) {
+            try? projectService.loadProjects()
+        } else {
+            try? projectService.initialize()
+        }
 
         let coordinator = ImportCoordinator(
             libraryRoot: libraryRoot,
-            metadataProvider: metadataProvider
+            metadataProvider: metadataProvider,
+            projectService: projectService
         )
         coordinator.loadExistingPapers()
         importCoordinator = coordinator
