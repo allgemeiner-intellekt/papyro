@@ -30,6 +30,26 @@ struct TextExtractorTests {
         #expect(content == "some extracted text")
     }
 
+    @Test func loadCachedTextReturnsContent() throws {
+        let fm = FileManager.default
+        let tempDir = fm.temporaryDirectory.appendingPathComponent("PapyroTest-\(UUID().uuidString)")
+        try fm.createDirectory(at: tempDir.appendingPathComponent(".cache/text"), withIntermediateDirectories: true)
+        defer { try? fm.removeItem(at: tempDir) }
+
+        let paperId = UUID()
+        try extractor.cacheText("cached content here", for: paperId, in: tempDir)
+
+        let loaded = extractor.loadCachedText(for: paperId, in: tempDir)
+        #expect(loaded == "cached content here")
+    }
+
+    @Test func loadCachedTextReturnsNilWhenMissing() {
+        let tempDir = FileManager.default.temporaryDirectory.appendingPathComponent("PapyroTest-\(UUID().uuidString)")
+        let paperId = UUID()
+        let loaded = extractor.loadCachedText(for: paperId, in: tempDir)
+        #expect(loaded == nil)
+    }
+
     @Test func extractsTextFromValidPDF() throws {
         // Create a minimal PDF using Core Graphics
         let fm = FileManager.default

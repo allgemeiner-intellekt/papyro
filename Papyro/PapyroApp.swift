@@ -40,13 +40,14 @@ struct PapyroApp: App {
     private func setupImportCoordinator(config: LibraryConfig) {
         let libraryRoot = URL(fileURLWithPath: config.libraryPath)
 
-        let metadataProvider: MetadataProvider
+        var providers: [MetadataProvider] = []
         if let serverURLString = config.translationServerURL,
            let serverURL = URL(string: serverURLString) {
-            metadataProvider = TranslationServerProvider(serverURL: serverURL)
-        } else {
-            metadataProvider = CrossRefProvider()
+            providers.append(TranslationServerProvider(serverURL: serverURL))
         }
+        providers.append(CrossRefProvider())
+        providers.append(SemanticScholarProvider())
+        let metadataProvider: MetadataProvider = FallbackMetadataProvider(providers: providers)
 
         let coordinator = ImportCoordinator(
             libraryRoot: libraryRoot,

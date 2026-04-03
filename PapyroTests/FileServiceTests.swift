@@ -74,4 +74,42 @@ struct FileServiceTests {
         #expect(!name.contains("?"))
         #expect(!name.contains("("))
     }
+
+    @Test func renamePDFAppendsNumberOnCollision() throws {
+        let tempDir = makeTempDir()
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        // Create existing file at destination
+        let existing = tempDir.appendingPathComponent("papers/2024_smith_test-paper.pdf")
+        createDummyPDF(at: existing)
+
+        // Create the file to rename
+        let original = tempDir.appendingPathComponent("papers/original.pdf")
+        createDummyPDF(at: original)
+
+        let newURL = try fileService.renamePDF(from: original, to: "2024_smith_test-paper.pdf")
+
+        #expect(newURL.lastPathComponent == "2024_smith_test-paper-2.pdf")
+        #expect(FileManager.default.fileExists(atPath: newURL.path))
+        #expect(FileManager.default.fileExists(atPath: existing.path))
+    }
+
+    @Test func renamePDFIncrementsOnMultipleCollisions() throws {
+        let tempDir = makeTempDir()
+        defer { try? FileManager.default.removeItem(at: tempDir) }
+
+        // Create existing files at destination and -2
+        let existing1 = tempDir.appendingPathComponent("papers/2024_smith_test-paper.pdf")
+        let existing2 = tempDir.appendingPathComponent("papers/2024_smith_test-paper-2.pdf")
+        createDummyPDF(at: existing1)
+        createDummyPDF(at: existing2)
+
+        let original = tempDir.appendingPathComponent("papers/original.pdf")
+        createDummyPDF(at: original)
+
+        let newURL = try fileService.renamePDF(from: original, to: "2024_smith_test-paper.pdf")
+
+        #expect(newURL.lastPathComponent == "2024_smith_test-paper-3.pdf")
+        #expect(FileManager.default.fileExists(atPath: newURL.path))
+    }
 }

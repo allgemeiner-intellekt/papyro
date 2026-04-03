@@ -4,6 +4,14 @@ struct DetailView: View {
     @Environment(AppState.self) private var appState
     @Environment(ImportCoordinator.self) private var coordinator
 
+    @State private var isEditing = false
+    @State private var editTitle = ""
+    @State private var editAuthors = ""
+    @State private var editYear = ""
+    @State private var editJournal = ""
+    @State private var editDOI = ""
+    @State private var editAbstract = ""
+
     private var paper: Paper? {
         guard let id = appState.selectedPaperId else { return nil }
         return coordinator.papers.first { $0.id == id }
@@ -13,17 +21,24 @@ struct DetailView: View {
         if let paper = paper {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    headerSection(paper)
-                    Divider()
-                    metadataSection(paper)
-                    if let abstract = paper.abstract, !abstract.isEmpty {
+                    if isEditing {
+                        editForm(paper)
+                    } else {
+                        headerSection(paper)
                         Divider()
-                        abstractSection(abstract)
+                        metadataSection(paper)
+                        if let abstract = paper.abstract, !abstract.isEmpty {
+                            Divider()
+                            abstractSection(abstract)
+                        }
+                        Divider()
+                        actionsSection(paper)
                     }
-                    Divider()
-                    actionsSection(paper)
                 }
                 .padding()
+            }
+            .onChange(of: appState.selectedPaperId) {
+                isEditing = false
             }
         } else {
             ContentUnavailableView(
@@ -31,6 +46,67 @@ struct DetailView: View {
                 systemImage: "doc.richtext",
                 description: Text("Select a paper to view its details.")
             )
+        }
+    }
+
+    @ViewBuilder
+    private func editForm(_ paper: Paper) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Edit Metadata")
+                .font(.title2)
+                .fontWeight(.bold)
+
+            LabeledContent("Title") {
+                TextField("Title", text: $editTitle)
+                    .textFieldStyle(.roundedBorder)
+            }
+            LabeledContent("Authors") {
+                TextField("Comma-separated authors", text: $editAuthors)
+                    .textFieldStyle(.roundedBorder)
+            }
+            LabeledContent("Year") {
+                TextField("Year", text: $editYear)
+                    .textFieldStyle(.roundedBorder)
+                    .frame(width: 100)
+            }
+            LabeledContent("Journal") {
+                TextField("Journal", text: $editJournal)
+                    .textFieldStyle(.roundedBorder)
+            }
+            LabeledContent("DOI") {
+                TextField("DOI", text: $editDOI)
+                    .textFieldStyle(.roundedBorder)
+            }
+            LabeledContent("Abstract") {
+                TextEditor(text: $editAbstract)
+                    .frame(minHeight: 100)
+                    .border(Color.secondary.opacity(0.3))
+            }
+
+            HStack(spacing: 12) {
+                Button("Save") {
+                    let authors = editAuthors
+                        .components(separatedBy: ",")
+                        .map { $0.trimmingCharacters(in: .whitespaces) }
+                        .filter { !$0.isEmpty }
+                    coordinator.updatePaperMetadata(
+                        paperId: paper.id,
+                        title: editTitle,
+                        authors: authors,
+                        year: Int(editYear),
+                        journal: editJournal.isEmpty ? nil : editJournal,
+                        doi: editDOI.isEmpty ? nil : editDOI,
+                        abstract: editAbstract.isEmpty ? nil : editAbstract
+                    )
+                    isEditing = false
+                }
+                .buttonStyle(.borderedProminent)
+
+                Button("Cancel") {
+                    isEditing = false
+                }
+                .buttonStyle(.bordered)
+            }
         }
     }
 
@@ -108,6 +184,24 @@ struct DetailView: View {
 
                 Button("Reveal in Finder") {
                     revealInFinder(paper)
+                }
+
+                if paper.importState == .unresolved {
+                    Button("Retry Lookup") {
+                        Task {
+                            await coordinator.retryMetadataLookup(for: paper.id)
+                        }
+                    }
+                }
+
+                Button("Edit") {
+                    editTitle = paper.title
+                    editAuthors = paper.authors.joined(separator: ", ")
+                    editYear = paper.year.map(String.init) ?? ""
+                    editJournal = paper.journal ?? ""
+                    editDOI = paper.doi ?? ""
+                    editAbstract = paper.abstract ?? ""
+                    isEditing = true
                 }
             }
         }

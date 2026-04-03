@@ -12,9 +12,20 @@ struct FileService: Sendable {
     }
 
     func renamePDF(from currentURL: URL, to newName: String) throws -> URL {
-        let newURL = currentURL.deletingLastPathComponent().appendingPathComponent(newName)
-        try FileManager.default.moveItem(at: currentURL, to: newURL)
-        return newURL
+        let dir = currentURL.deletingLastPathComponent()
+        let stem = (newName as NSString).deletingPathExtension
+        let ext = (newName as NSString).pathExtension
+
+        var candidate = dir.appendingPathComponent(newName)
+        var counter = 2
+        while FileManager.default.fileExists(atPath: candidate.path) {
+            let suffixed = ext.isEmpty ? "\(stem)-\(counter)" : "\(stem)-\(counter).\(ext)"
+            candidate = dir.appendingPathComponent(suffixed)
+            counter += 1
+        }
+
+        try FileManager.default.moveItem(at: currentURL, to: candidate)
+        return candidate
     }
 
     func generateFilename(year: Int?, author: String?, title: String) -> String {

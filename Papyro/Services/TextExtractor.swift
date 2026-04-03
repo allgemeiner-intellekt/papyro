@@ -19,6 +19,11 @@ struct TextExtractor: Sendable {
         return combined.isEmpty ? nil : combined
     }
 
+    func loadCachedText(for paperId: UUID, in libraryRoot: URL) -> String? {
+        let fileURL = libraryRoot.appendingPathComponent(".cache/text/\(paperId.uuidString).txt")
+        return try? String(contentsOf: fileURL, encoding: .utf8)
+    }
+
     func cacheText(_ text: String, for paperId: UUID, in libraryRoot: URL) throws {
         let cacheDir = libraryRoot.appendingPathComponent(".cache/text")
         let fileURL = cacheDir.appendingPathComponent("\(paperId.uuidString).txt")

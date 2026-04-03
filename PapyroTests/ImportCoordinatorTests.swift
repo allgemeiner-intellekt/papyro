@@ -137,4 +137,118 @@ struct ImportCoordinatorTests {
         let papers = await coordinator.papers
         #expect(papers.count == 3)
     }
+
+    @Test func retryMetadataLookupSucceeds() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        // First import with no metadata
+        let mock = MockMetadataProvider()
+        mock.metadataToReturn = nil
+        mock.searchResult = nil
+
+        let coordinator = await ImportCoordinator(
+            libraryRoot: libRoot,
+            metadataProvider: mock
+        )
+
+        let sourcePDF = createDummyPDF()
+        defer { try? FileManager.default.removeItem(at: sourcePDF) }
+
+        await coordinator.importPDFs([sourcePDF])
+
+        var papers = await coordinator.papers
+        #expect(papers.count == 1)
+        #expect(papers[0].importState == .unresolved)
+
+        let paperId = papers[0].id
+
+        // Now set up metadata and retry
+        mock.metadataToReturn = PaperMetadata(
+            title: "Retry Success",
+            authors: ["Author, Test"],
+            year: 2024,
+            journal: nil,
+            doi: "10.1234/retry",
+            arxivId: nil,
+            abstract: nil,
+            url: nil,
+            source: .crossRef
+        )
+
+        await coordinator.retryMetadataLookup(for: paperId)
+
+        papers = await coordinator.papers
+        let paper = papers.first { $0.id == paperId }!
+        #expect(paper.importState == .resolved)
+        #expect(paper.title == "Retry Success")
+        #expect(paper.metadataResolved == true)
+    }
+
+    @Test func retryMetadataLookupFailsGracefully() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let mock = MockMetadataProvider()
+        mock.metadataToReturn = nil
+        mock.searchResult = nil
+
+        let coordinator = await ImportCoordinator(
+            libraryRoot: libRoot,
+            metadataProvider: mock
+        )
+
+        let sourcePDF = createDummyPDF()
+        defer { try? FileManager.default.removeItem(at: sourcePDF) }
+
+        await coordinator.importPDFs([sourcePDF])
+
+        var papers = await coordinator.papers
+        let paperId = papers[0].id
+
+        // Retry still fails
+        await coordinator.retryMetadataLookup(for: paperId)
+
+        papers = await coordinator.papers
+        #expect(papers[0].importState == .unresolved)
+    }
+
+    @Test func updatePaperMetadataPersists() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let mock = MockMetadataProvider()
+        mock.metadataToReturn = nil
+
+        let coordinator = await ImportCoordinator(
+            libraryRoot: libRoot,
+            metadataProvider: mock
+        )
+
+        let sourcePDF = createDummyPDF()
+        defer { try? FileManager.default.removeItem(at: sourcePDF) }
+
+        await coordinator.importPDFs([sourcePDF])
+
+        var papers = await coordinator.papers
+        let paperId = papers[0].id
+
+        await coordinator.updatePaperMetadata(
+            paperId: paperId,
+            title: "Manually Edited Title",
+            authors: ["Editor, Manual"],
+            year: 2025,
+            journal: "Journal of Testing",
+            doi: "10.1234/manual",
+            abstract: "An abstract"
+        )
+
+        papers = await coordinator.papers
+        let paper = papers.first { $0.id == paperId }!
+        #expect(paper.title == "Manually Edited Title")
+        #expect(paper.authors == ["Editor, Manual"])
+        #expect(paper.year == 2025)
+        #expect(paper.metadataSource == .manual)
+        #expect(paper.importState == .resolved)
+    }
 }

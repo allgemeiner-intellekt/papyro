@@ -43,8 +43,10 @@ class ImportCoordinator {
     }
 
     func importPDFs(_ urls: [URL]) async {
-        for url in urls {
-            await importSinglePDF(url)
+        await withTaskGroup(of: Void.self) { group in
+            for url in urls {
+                group.addTask { await self.importSinglePDF(url) }
+            }
         }
     }
 
@@ -95,9 +97,12 @@ class ImportCoordinator {
         // Step 3: Parse identifiers
         let identifiers = extractedText.map { identifierParser.parse($0) } ?? ParsedIdentifiers()
 
+        await resolveMetadata(paperId: paperId, pdfURL: pdfURL, identifiers: identifiers, extractedText: extractedText)
+    }
+
+    private func resolveMetadata(paperId: UUID, pdfURL: URL, identifiers: ParsedIdentifiers, extractedText: String?) async {
         updatePaper(paperId) { $0.importState = .resolving }
 
-        // Step 4: Fetch metadata
         let metadata = await fetchMetadataWithFallback(identifiers: identifiers, extractedText: extractedText)
 
         if let metadata = metadata {
@@ -117,7 +122,6 @@ class ImportCoordinator {
                 p.dateModified = Date()
             }
 
-            // Step 5: Rename PDF
             let firstAuthor = metadata.authors.first.flatMap { $0.components(separatedBy: ",").first }
             let newFilename = fileService.generateFilename(year: metadata.year, author: firstAuthor, title: metadata.title)
 
@@ -134,7 +138,59 @@ class ImportCoordinator {
             }
         }
 
-        // Step 6: Write index
+        if let finalPaper = papers.first(where: { $0.id == paperId }) {
+            try? indexService.save(finalPaper, in: libraryRoot)
+            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        }
+    }
+
+    func retryMetadataLookup(for paperId: UUID) async {
+        guard let paper = papers.first(where: { $0.id == paperId }),
+              paper.importState == .unresolved else { return }
+
+        let cachedText = textExtractor.loadCachedText(for: paperId, in: libraryRoot)
+        let identifiers = cachedText.map { identifierParser.parse($0) } ?? ParsedIdentifiers()
+        let pdfURL = libraryRoot.appendingPathComponent(paper.pdfPath)
+
+        await resolveMetadata(paperId: paperId, pdfURL: pdfURL, identifiers: identifiers, extractedText: cachedText)
+    }
+
+    func updatePaperMetadata(
+        paperId: UUID,
+        title: String,
+        authors: [String],
+        year: Int?,
+        journal: String?,
+        doi: String?,
+        abstract: String?
+    ) {
+        guard let paper = papers.first(where: { $0.id == paperId }) else { return }
+
+        updatePaper(paperId) { p in
+            p.title = title
+            p.authors = authors
+            p.year = year
+            p.journal = journal
+            p.doi = doi
+            p.abstract = abstract
+            p.metadataSource = .manual
+            p.metadataResolved = true
+            p.importState = .resolved
+            p.dateModified = Date()
+        }
+
+        // Re-generate filename if metadata changed
+        let firstAuthor = authors.first.flatMap { $0.components(separatedBy: ",").first }
+        let newFilename = fileService.generateFilename(year: year, author: firstAuthor, title: title)
+        let pdfURL = libraryRoot.appendingPathComponent(paper.pdfPath)
+
+        if let newURL = try? fileService.renamePDF(from: pdfURL, to: newFilename) {
+            updatePaper(paperId) { p in
+                p.pdfPath = "papers/\(newURL.lastPathComponent)"
+                p.pdfFilename = newURL.lastPathComponent
+            }
+        }
+
         if let finalPaper = papers.first(where: { $0.id == paperId }) {
             try? indexService.save(finalPaper, in: libraryRoot)
             try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
