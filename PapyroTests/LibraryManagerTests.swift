@@ -3,7 +3,7 @@ import Foundation
 @testable import Papyro
 
 struct LibraryManagerTests {
-    @Test func setupLibraryCreatesFoldersAndConfig() throws {
+    @Test @MainActor func setupLibraryCreatesFoldersAndConfig() throws {
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("PapyroTest-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: tempDir) }
@@ -39,9 +39,13 @@ struct LibraryManagerTests {
         // Verify app state was updated
         #expect(appState.isOnboarding == false)
         #expect(appState.libraryConfig != nil)
+
+        // Verify projects.json was created
+        let projectsURL = tempDir.appendingPathComponent("projects.json")
+        #expect(fm.fileExists(atPath: projectsURL.path))
     }
 
-    @Test func detectExistingLibraryReturnsNilWhenNoPath() throws {
+    @Test @MainActor func detectExistingLibraryReturnsNilWhenNoPath() throws {
         let appState = AppState()
         let manager = LibraryManager(appState: appState)
 
@@ -55,7 +59,7 @@ struct LibraryManagerTests {
         #expect(appState.isOnboarding == true)
     }
 
-    @Test func detectExistingLibraryLoadsValidPath() throws {
+    @Test @MainActor func detectExistingLibraryLoadsValidPath() throws {
         let tempDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("PapyroTest-\(UUID().uuidString)")
         defer { try? FileManager.default.removeItem(at: tempDir) }

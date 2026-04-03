@@ -15,6 +15,13 @@ struct ImportCoordinatorTests {
         return dir
     }
 
+    @MainActor
+    private func makeProjectService(libraryRoot: URL) throws -> ProjectService {
+        let service = ProjectService(libraryRoot: libraryRoot)
+        try service.initialize()
+        return service
+    }
+
     private func createDummyPDF(named name: String = "test.pdf") -> URL {
         let url = FileManager.default.temporaryDirectory.appendingPathComponent("\(UUID().uuidString)-\(name)")
         FileManager.default.createFile(atPath: url.path, contents: "dummy pdf".data(using: .utf8))
@@ -38,9 +45,11 @@ struct ImportCoordinatorTests {
             source: .translationServer
         )
 
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
         let coordinator = await ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()
@@ -81,9 +90,11 @@ struct ImportCoordinatorTests {
         mock.metadataToReturn = nil
         mock.searchResult = nil
 
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
         let coordinator = await ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF(named: "mystery-paper.pdf")
@@ -118,9 +129,11 @@ struct ImportCoordinatorTests {
             source: .translationServer
         )
 
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
         let coordinator = await ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let pdf1 = createDummyPDF(named: "paper1.pdf")
@@ -147,9 +160,11 @@ struct ImportCoordinatorTests {
         mock.metadataToReturn = nil
         mock.searchResult = nil
 
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
         let coordinator = await ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()
@@ -193,9 +208,11 @@ struct ImportCoordinatorTests {
         mock.metadataToReturn = nil
         mock.searchResult = nil
 
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
         let coordinator = await ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()
@@ -220,9 +237,11 @@ struct ImportCoordinatorTests {
         let mock = MockMetadataProvider()
         mock.metadataToReturn = nil
 
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
         let coordinator = await ImportCoordinator(
             libraryRoot: libRoot,
-            metadataProvider: mock
+            metadataProvider: mock,
+            projectService: projectService
         )
 
         let sourcePDF = createDummyPDF()

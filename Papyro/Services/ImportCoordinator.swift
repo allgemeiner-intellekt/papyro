@@ -12,10 +12,12 @@ class ImportCoordinator {
     private let identifierParser: IdentifierParser
     private let metadataProvider: MetadataProvider
     private let indexService: IndexService
+    let projectService: ProjectService
 
     init(
         libraryRoot: URL,
         metadataProvider: MetadataProvider,
+        projectService: ProjectService,
         fileService: FileService = FileService(),
         textExtractor: TextExtractor = TextExtractor(),
         identifierParser: IdentifierParser = IdentifierParser(),
@@ -23,6 +25,7 @@ class ImportCoordinator {
     ) {
         self.libraryRoot = libraryRoot
         self.metadataProvider = metadataProvider
+        self.projectService = projectService
         self.fileService = fileService
         self.textExtractor = textExtractor
         self.identifierParser = identifierParser
@@ -38,6 +41,15 @@ class ImportCoordinator {
                     p.importState = .unresolved
                 }
                 return p
+            }
+        }
+
+        // Migration: if papers have empty projectIDs, assign to Inbox
+        let inboxID = projectService.inbox.id
+        for i in papers.indices {
+            if papers[i].projectIDs.isEmpty {
+                papers[i].projectIDs = [inboxID]
+                try? indexService.save(papers[i], in: libraryRoot)
             }
         }
     }
@@ -61,7 +73,7 @@ class ImportCoordinator {
         let (pdfURL, paperId) = copyResult
 
         // Create initial paper
-        let paper = Paper(
+        var paper = Paper(
             id: paperId,
             canonicalId: nil,
             title: sourceURL.deletingPathExtension().lastPathComponent,
@@ -85,6 +97,12 @@ class ImportCoordinator {
             metadataResolved: false,
             importState: .importing
         )
+
+        // Assign to Inbox
+        if let assigned = try? projectService.assignPaper(paper, to: projectService.inbox) {
+            paper = assigned
+        }
+
         papers.append(paper)
 
         // Step 2: Extract text
@@ -192,6 +210,45 @@ class ImportCoordinator {
 
         if let finalPaper = papers.first(where: { $0.id == paperId }) {
             try? indexService.save(finalPaper, in: libraryRoot)
+            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        }
+    }
+
+    func updatePaperStatus(paperId: UUID, status: ReadingStatus) {
+        updatePaper(paperId) { p in
+            p.status = status
+            p.dateModified = Date()
+        }
+        if let paper = papers.first(where: { $0.id == paperId }) {
+            try? indexService.save(paper, in: libraryRoot)
+            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        }
+    }
+
+    func assignPaperToProject(paperId: UUID, project: Project) {
+        guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
+        if let updated = try? projectService.assignPaper(papers[index], to: project) {
+            papers[index] = updated
+            try? indexService.save(papers[index], in: libraryRoot)
+            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        }
+    }
+
+    func unassignPaperFromProject(paperId: UUID, project: Project) {
+        guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
+        if let updated = try? projectService.unassignPaper(papers[index], from: project) {
+            papers[index] = updated
+            try? indexService.save(papers[index], in: libraryRoot)
+            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        }
+    }
+
+    func deleteProject(id: UUID) {
+        if let updatedPapers = try? projectService.deleteProject(id: id, papers: papers) {
+            papers = updatedPapers
+            for paper in papers {
+                try? indexService.save(paper, in: libraryRoot)
+            }
             try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
         }
     }

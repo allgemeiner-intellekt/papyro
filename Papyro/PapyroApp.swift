@@ -40,6 +40,17 @@ struct PapyroApp: App {
     private func setupImportCoordinator(config: LibraryConfig) {
         let libraryRoot = URL(fileURLWithPath: config.libraryPath)
 
+        // Load column preferences from config
+        if let columns = config.visibleColumns {
+            appState.visibleColumns = Set(columns)
+        }
+        if let sortCol = config.sortColumn {
+            appState.sortColumn = sortCol
+        }
+        if let sortAsc = config.sortAscending {
+            appState.sortAscending = sortAsc
+        }
+
         var providers: [MetadataProvider] = []
         if let serverURLString = config.translationServerURL,
            let serverURL = URL(string: serverURLString) {
@@ -49,9 +60,18 @@ struct PapyroApp: App {
         providers.append(SemanticScholarProvider())
         let metadataProvider: MetadataProvider = FallbackMetadataProvider(providers: providers)
 
+        let projectService = ProjectService(libraryRoot: libraryRoot)
+        // Load or initialize projects
+        if FileManager.default.fileExists(atPath: libraryRoot.appendingPathComponent("projects.json").path) {
+            try? projectService.loadProjects()
+        } else {
+            try? projectService.initialize()
+        }
+
         let coordinator = ImportCoordinator(
             libraryRoot: libraryRoot,
-            metadataProvider: metadataProvider
+            metadataProvider: metadataProvider,
+            projectService: projectService
         )
         coordinator.loadExistingPapers()
         importCoordinator = coordinator

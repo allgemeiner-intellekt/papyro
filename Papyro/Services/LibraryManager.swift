@@ -1,6 +1,7 @@
 import Foundation
 
 @Observable
+@MainActor
 class LibraryManager {
     private let appState: AppState
     private let fileManager = FileManager.default
@@ -26,6 +27,10 @@ class LibraryManager {
         encoder.outputFormatting = .prettyPrinted
         let data = try encoder.encode(config)
         try data.write(to: path.appendingPathComponent("config.json"))
+
+        // Initialize projects.json with Inbox
+        let projectService = ProjectService(libraryRoot: path)
+        try projectService.initialize()
 
         // Save to UserDefaults
         defaults.set(path.path, forKey: "libraryPath")
