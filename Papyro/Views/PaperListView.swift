@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct PaperListView: View {
-    let category: SidebarCategory
     @Environment(AppState.self) private var appState
     @Environment(ImportCoordinator.self) private var coordinator
 
@@ -22,7 +21,7 @@ struct PaperListView: View {
                 }
             }
         }
-        .navigationTitle(category.displayName)
+        .navigationTitle("Papers")
         .dropDestination(for: URL.self) { urls, _ in
             let pdfURLs = urls.filter { $0.pathExtension.lowercased() == "pdf" }
             guard !pdfURLs.isEmpty else { return false }

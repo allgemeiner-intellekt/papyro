@@ -7,9 +7,9 @@ struct MainView: View {
         @Bindable var appState = appState
 
         NavigationSplitView {
-            SidebarView(selectedCategory: $appState.selectedCategory)
+            SidebarView()
         } content: {
-            PaperListView(category: appState.selectedCategory)
+            PaperListView()
         } detail: {
             DetailView()
         }

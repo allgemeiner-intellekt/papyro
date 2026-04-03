@@ -1,21 +1,15 @@
 import SwiftUI
 
 struct SidebarView: View {
-    @Binding var selectedCategory: SidebarCategory
+    @Environment(AppState.self) private var appState
 
     var body: some View {
-        List(SidebarCategory.allCases, selection: $selectedCategory) { category in
-            SidebarRow(category: category)
+        @Bindable var appState = appState
+
+        List(selection: $appState.selectedSidebarItem) {
+            Label("All Papers", systemImage: "books.vertical")
+                .tag(SidebarItem.allPapers)
         }
         .navigationTitle("Papyro")
-    }
-}
-
-private struct SidebarRow: View {
-    let category: SidebarCategory
-
-    var body: some View {
-        Label(category.displayName, systemImage: category.iconName)
-            .tag(category)
     }
 }

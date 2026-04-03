@@ -40,7 +40,8 @@
 		01964181FBAD40F29881E967 /* ProjectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 128790C632414A34AEBFE78D /* ProjectTests.swift */; };
 		FCC7EE5C9487490D885B9ED5 /* SymlinkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4394B1F3326147109869AFFB /* SymlinkService.swift */; };
 		29DA84B1368A41D795D71DD4 /* SymlinkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94A2E4B393074397B21AB665 /* SymlinkServiceTests.swift */; };
-		EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A73E2411075E7CC3C1146977 /* SidebarCategory.swift */; };
+		D9C40E306EBC492D8CEE9B9B /* SidebarItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0D9279949624E22BC62DC79 /* SidebarItem.swift */; };
+		7CA0F840A3AF4125B74C9235 /* PaperColumn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CCFC212EE34A61A8452F16 /* PaperColumn.swift */; };
 		F34E149EA7959B0F9F784DD4 /* IndexServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4215939B6D341C8E80B4312C /* IndexServiceTests.swift */; };
 		FB4685DB4F1D81A0540D5C72 /* IndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */; };
 /* End PBXBuildFile section */
@@ -80,7 +81,8 @@
 		9797405ECDADDBE17F9F76B1 /* IdentifierParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IdentifierParser.swift; sourceTree = "<group>"; };
 		A477238CB647625010D6AB47 /* SemanticScholarProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SemanticScholarProvider.swift; sourceTree = "<group>"; };
 		A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PapyroApp.swift; sourceTree = "<group>"; };
-		A73E2411075E7CC3C1146977 /* SidebarCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarCategory.swift; sourceTree = "<group>"; };
+		E0D9279949624E22BC62DC79 /* SidebarItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SidebarItem.swift; sourceTree = "<group>"; };
+		06CCFC212EE34A61A8452F16 /* PaperColumn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperColumn.swift; sourceTree = "<group>"; };
 		B19401F37547D61F3929C138 /* ImportCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinator.swift; sourceTree = "<group>"; };
 		B29C5E5BFB8680A05980B7DD /* PaperRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperRowView.swift; sourceTree = "<group>"; };
 		D27710A85129BE25D8A4FDDF /* TextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractor.swift; sourceTree = "<group>"; };
@@ -184,7 +186,8 @@
 				2F4933E4C5E3BD5CA290238F /* Paper.swift */,
 				DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */,
 				5C88D19A2BF84EE3A0ACC199 /* Project.swift */,
-				A73E2411075E7CC3C1146977 /* SidebarCategory.swift */,
+				06CCFC212EE34A61A8452F16 /* PaperColumn.swift */,
+				E0D9279949624E22BC62DC79 /* SidebarItem.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -282,8 +285,9 @@
 				63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */,
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
 				5E76603522514850231A7513 /* SemanticScholarProvider.swift in Sources */,
-				EEEAE42E23C3ADD68113AAC2 /* SidebarCategory.swift in Sources */,
 				FCC7EE5C9487490D885B9ED5 /* SymlinkService.swift in Sources */,
+				D9C40E306EBC492D8CEE9B9B /* SidebarItem.swift in Sources */,
+				7CA0F840A3AF4125B74C9235 /* PaperColumn.swift in Sources */,
 				A3BCB5FC6C0862A446EA8197 /* SidebarView.swift in Sources */,
 				A12210850766FC9BF3A8C544 /* TextExtractor.swift in Sources */,
 				B2F59B298CD5FD0A04244E4A /* TranslationServerProvider.swift in Sources */,
