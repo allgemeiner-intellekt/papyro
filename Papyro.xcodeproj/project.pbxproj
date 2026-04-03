@@ -44,6 +44,8 @@
 		7CA0F840A3AF4125B74C9235 /* PaperColumn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06CCFC212EE34A61A8452F16 /* PaperColumn.swift */; };
 		F34E149EA7959B0F9F784DD4 /* IndexServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4215939B6D341C8E80B4312C /* IndexServiceTests.swift */; };
 		FB4685DB4F1D81A0540D5C72 /* IndexService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */; };
+		CFD3A612789F4BB5A36F85B6 /* ProjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2E1CE7ECDA40C5909754EB /* ProjectService.swift */; };
+		2F1EFB32C84C469CBFBDBCCC /* ProjectServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -96,6 +98,8 @@
 		4394B1F3326147109869AFFB /* SymlinkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymlinkService.swift; sourceTree = "<group>"; };
 		94A2E4B393074397B21AB665 /* SymlinkServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymlinkServiceTests.swift; sourceTree = "<group>"; };
 		E6DBDF3669E73FF302194E21 /* PaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperTests.swift; sourceTree = "<group>"; };
+		2E2E1CE7ECDA40C5909754EB /* ProjectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectService.swift; sourceTree = "<group>"; };
+		F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectServiceTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -153,6 +157,7 @@
 				6B23819B93A6201B5BF29B52 /* LibraryManagerTests.swift */,
 				E6DBDF3669E73FF302194E21 /* PaperTests.swift */,
 				128790C632414A34AEBFE78D /* ProjectTests.swift */,
+				F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */,
 				94A2E4B393074397B21AB665 /* SymlinkServiceTests.swift */,
 				63E3F95A82BB697D90277F44 /* TextExtractorTests.swift */,
 			);
@@ -169,6 +174,7 @@
 				B19401F37547D61F3929C138 /* ImportCoordinator.swift */,
 				25A14AD3020A52A1B1E2C9E1 /* IndexService.swift */,
 				73CDCCAA12AB6F37360FF055 /* LibraryManager.swift */,
+				2E2E1CE7ECDA40C5909754EB /* ProjectService.swift */,
 				261260533852D188CFD9AE05 /* MetadataProvider.swift */,
 				A477238CB647625010D6AB47 /* SemanticScholarProvider.swift */,
 				4394B1F3326147109869AFFB /* SymlinkService.swift */,
@@ -281,6 +287,7 @@
 				D39C0E7DE291C86A03A9EF31 /* Paper.swift in Sources */,
 				9D490A2E8F9B00121FD8A063 /* PaperListView.swift in Sources */,
 				297174F53086436EB72F1E31 /* Project.swift in Sources */,
+				CFD3A612789F4BB5A36F85B6 /* ProjectService.swift in Sources */,
 				DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */,
 				63586F658F0BE35C45B0E26D /* PaperRowView.swift in Sources */,
 				4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */,
@@ -308,6 +315,7 @@
 				92FA9586FD273C216ECEA8A6 /* LibraryManagerTests.swift in Sources */,
 				1503CF399738BB43C8B58367 /* PaperTests.swift in Sources */,
 				01964181FBAD40F29881E967 /* ProjectTests.swift in Sources */,
+				2F1EFB32C84C469CBFBDBCCC /* ProjectServiceTests.swift in Sources */,
 				29DA84B1368A41D795D71DD4 /* SymlinkServiceTests.swift in Sources */,
 				7B35EC4AE92E02879A635CE4 /* TextExtractorTests.swift in Sources */,
 			);
