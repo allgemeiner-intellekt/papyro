@@ -20,8 +20,7 @@ struct PaperTests {
             pdfPath: "papers/2024_smith_test-paper.pdf",
             pdfFilename: "2024_smith_test-paper.pdf",
             notePath: nil,
-            topics: [],
-            projects: [],
+            projectIDs: [],
             status: .toRead,
             dateAdded: Date(timeIntervalSince1970: 1712000000),
             dateModified: Date(timeIntervalSince1970: 1712000000),
@@ -49,6 +48,7 @@ struct PaperTests {
         #expect(decoded.metadataSource == .translationServer)
         #expect(decoded.metadataResolved == true)
         #expect(decoded.importState == .resolved)
+        #expect(decoded.projectIDs.isEmpty)
     }
 
     @Test func defaultsForUnresolvedPaper() throws {
@@ -68,8 +68,7 @@ struct PaperTests {
             pdfPath: "papers/some-uuid.pdf",
             pdfFilename: "some-uuid.pdf",
             notePath: nil,
-            topics: [],
-            projects: [],
+            projectIDs: [],
             status: .toRead,
             dateAdded: Date(),
             dateModified: Date(),
@@ -81,5 +80,6 @@ struct PaperTests {
         #expect(paper.metadataResolved == false)
         #expect(paper.importState == .unresolved)
         #expect(paper.authors.isEmpty)
+        #expect(paper.projectIDs.isEmpty)
     }
 }
