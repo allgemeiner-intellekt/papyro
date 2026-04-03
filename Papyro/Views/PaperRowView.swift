@@ -104,4 +104,28 @@ extension ReadingStatus {
         case .archived: "Archived"
         }
     }
+
+    var iconName: String {
+        switch self {
+        case .toRead: "circle.fill"
+        case .reading: "circle.dotted.circle"
+        case .archived: "checkmark.circle.fill"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .toRead: .blue
+        case .reading: .orange
+        case .archived: .green
+        }
+    }
+
+    var sortOrder: Int {
+        switch self {
+        case .toRead: 0
+        case .reading: 1
+        case .archived: 2
+        }
+    }
 }
