@@ -40,33 +40,7 @@ struct ProjectChipsView: View {
                     .clipShape(Capsule())
                 }
 
-                Menu {
-                    ForEach(availableProjects) { project in
-                        Button(project.name) {
-                            onAdd(project)
-                        }
-                    }
-                    if !availableProjects.isEmpty {
-                        Divider()
-                    }
-                    Button("New Project...") {
-                        isAddingNew = true
-                        isNewProjectFieldFocused = true
-                    }
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "plus")
-                        Text("Add")
-                    }
-                    .font(.caption)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 5)
-                    .background(Color.secondary.opacity(0.1))
-                    .clipShape(Capsule())
-                }
-                .menuStyle(.borderlessButton)
-                .menuIndicator(.hidden)
-                .fixedSize()
+                addProjectMenu
             }
 
             if isAddingNew {
@@ -96,6 +70,37 @@ struct ProjectChipsView: View {
 
     private var availableProjects: [Project] {
         projects.filter { !$0.isInbox && !paper.projectIDs.contains($0.id) }
+    }
+
+    private var addProjectMenu: some View {
+        Menu {
+            ForEach(availableProjects) { project in
+                Button(project.name) {
+                    onAdd(project)
+                }
+            }
+            if !availableProjects.isEmpty {
+                Divider()
+            }
+            Button("New Project...") {
+                isAddingNew = true
+                isNewProjectFieldFocused = true
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Image(systemName: "plus")
+                Text("Add")
+            }
+            .font(.caption)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Color.secondary.opacity(0.1))
+            .clipShape(Capsule())
+        }
+        .menuStyle(.borderlessButton)
+        .menuIndicator(.hidden)
+        .fixedSize()
+        .padding(.top, 2)
     }
 }
 
