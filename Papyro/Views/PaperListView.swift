@@ -127,6 +127,7 @@ struct PaperListView: View {
                         )
                     }
                 }
+                .listStyle(.inset(alternatesRowBackgrounds: true))
             }
         }
         .navigationTitle(navigationTitle)
