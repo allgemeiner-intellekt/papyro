@@ -12,6 +12,7 @@ struct SidebarView: View {
     @State private var isStatusExpanded = true
     @State private var isProjectsHeaderHovered = false
     @State private var isStatusHeaderHovered = false
+    @State private var hoveredStatus: ReadingStatus?
     @FocusState private var isNewProjectFieldFocused: Bool
 
     private var projectService: ProjectService {
@@ -132,32 +133,37 @@ struct SidebarView: View {
     private func statusRow(_ status: ReadingStatus) -> some View {
         let count = coordinator.papers.filter { $0.status == status }.count
         let isSelected = appState.selectedStatusFilter == status
+        let isHovered = hoveredStatus == status
 
-        Button {
+        HStack {
+            Image(systemName: status.iconName)
+                .foregroundStyle(status.color)
+            Text(status.displayName)
+            Spacer()
+            Text("\(count)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .padding(.vertical, 2)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(isSelected ? status.color.opacity(0.12) : (isHovered ? status.color.opacity(0.15) : .clear))
+                .padding(.leading, -6)
+                .padding(.trailing, -6)
+        )
+        .contentShape(Rectangle())
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                hoveredStatus = hovering ? status : nil
+            }
+        }
+        .onTapGesture {
             if isSelected {
                 appState.selectedStatusFilter = nil
             } else {
                 appState.selectedStatusFilter = status
             }
-        } label: {
-            HStack {
-                Image(systemName: status.iconName)
-                    .foregroundStyle(status.color)
-                Text(status.displayName)
-                Spacer()
-                Text("\(count)")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
         }
-        .buttonStyle(.plain)
-        .padding(.vertical, 2)
-        .background(
-            RoundedRectangle(cornerRadius: 5)
-                .fill(isSelected ? status.color.opacity(0.12) : .clear)
-                .padding(.leading, -6)
-                .padding(.trailing, -6)
-        )
     }
 
     @ViewBuilder
