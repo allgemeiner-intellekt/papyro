@@ -3,6 +3,7 @@ import SwiftUI
 struct PaperListView: View {
     @Environment(AppState.self) private var appState
     @Environment(ImportCoordinator.self) private var coordinator
+    @FocusState private var isSearchFocused: Bool
 
     private var filteredPapers: [Paper] {
         var result = coordinator.papers
@@ -123,6 +124,14 @@ struct PaperListView: View {
             }
         }
         .searchable(text: $appState.searchText, prompt: "Search papers")
+        .searchFocused($isSearchFocused)
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button("Find") { isSearchFocused = true }
+                    .keyboardShortcut("f", modifiers: .command)
+                    .hidden()
+            }
+        }
         .navigationTitle(navigationTitle)
         .dropDestination(for: URL.self) { urls, _ in
             let pdfURLs = urls.filter { $0.pathExtension.lowercased() == "pdf" }
