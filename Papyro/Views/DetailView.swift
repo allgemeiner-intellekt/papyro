@@ -173,7 +173,7 @@ struct DetailView: View {
                 Text("Status")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .frame(width: 80, alignment: .trailing)
+                    .frame(width: 80, alignment: .leading)
 
                 Picker("", selection: Binding(
                     get: { paper.status },
@@ -271,7 +271,7 @@ private struct MetadataRow: View {
                 Text(label)
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
-                    .frame(width: 80, alignment: .trailing)
+                    .frame(width: 80, alignment: .leading)
 
                 Text(value)
                     .font(.subheadline)
