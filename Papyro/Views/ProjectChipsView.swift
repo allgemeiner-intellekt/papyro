@@ -73,34 +73,42 @@ struct ProjectChipsView: View {
     }
 
     private var addProjectMenu: some View {
-        Menu {
-            ForEach(availableProjects) { project in
-                Button(project.name) {
-                    onAdd(project)
-                }
-            }
-            if !availableProjects.isEmpty {
-                Divider()
-            }
-            Button("New Project...") {
-                isAddingNew = true
-                isNewProjectFieldFocused = true
-            }
-        } label: {
-            HStack(spacing: 4) {
-                Image(systemName: "plus")
-                Text("Add")
-            }
-            .font(.caption)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 5)
-            .background(Color.secondary.opacity(0.1))
-            .clipShape(Capsule())
+        HStack(spacing: 4) {
+            Image(systemName: "plus")
+            Text("Add")
         }
-        .menuStyle(.borderlessButton)
-        .menuIndicator(.hidden)
+        .font(.caption)
+        .fontWeight(.medium)
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 5)
+        .background(Color.secondary.opacity(0.12))
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .strokeBorder(Color.secondary.opacity(0.25), lineWidth: 1)
+        )
+        .overlay {
+            Menu {
+                ForEach(availableProjects) { project in
+                    Button(project.name) {
+                        onAdd(project)
+                    }
+                }
+                if !availableProjects.isEmpty {
+                    Divider()
+                }
+                Button("New Project...") {
+                    isAddingNew = true
+                    isNewProjectFieldFocused = true
+                }
+            } label: {
+                Color.clear
+            }
+            .menuStyle(.borderlessButton)
+            .menuIndicator(.hidden)
+        }
         .fixedSize()
-        .padding(.top, 2)
     }
 }
 
