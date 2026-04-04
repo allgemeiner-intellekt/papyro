@@ -8,6 +8,8 @@ struct SidebarView: View {
     @State private var newProjectName = ""
     @State private var renamingProjectID: UUID?
     @State private var renameText = ""
+    @State private var isProjectsExpanded = true
+    @State private var isStatusExpanded = true
     @FocusState private var isNewProjectFieldFocused: Bool
     @FocusState private var isRenameFieldFocused: Bool
 
@@ -25,71 +27,75 @@ struct SidebarView: View {
 
             // Projects section
             Section {
-                // Inbox (pinned)
-                projectRow(projectService.inbox)
-
-                // User projects (alphabetical)
-                ForEach(projectService.userProjects) { project in
-                    if renamingProjectID == project.id {
-                        renameField(project: project)
-                    } else {
-                        projectRow(project)
-                            .contextMenu {
-                                Button("Rename") {
-                                    renameText = project.name
-                                    renamingProjectID = project.id
-                                }
-                                Button("Delete", role: .destructive) {
-                                    coordinator.deleteProject(id: project.id)
-                                }
-                            }
-                    }
-                }
-
-                if isAddingProject {
-                    TextField("Project name", text: $newProjectName)
-                        .textFieldStyle(.roundedBorder)
-                        .focused($isNewProjectFieldFocused)
-                        .onSubmit {
-                            if !newProjectName.isEmpty {
-                                try? projectService.createProject(name: newProjectName)
-                            }
-                            newProjectName = ""
-                            isAddingProject = false
-                        }
-                        .onExitCommand {
-                            newProjectName = ""
-                            isAddingProject = false
-                        }
-                        .onChange(of: isNewProjectFieldFocused) { _, focused in
-                            if !focused {
-                                newProjectName = ""
-                                isAddingProject = false
-                            }
-                        }
-                        .onAppear {
-                            isNewProjectFieldFocused = true
-                        }
-                }
-            } header: {
-                HStack {
-                    Text("Projects")
-                    Spacer()
+                sectionHeader("Projects", isExpanded: $isProjectsExpanded) {
                     Button {
                         isAddingProject = true
                     } label: {
                         Image(systemName: "plus")
-                            .font(.caption)
+                            .foregroundStyle(.secondary)
                     }
                     .buttonStyle(.plain)
+                }
+
+                if isProjectsExpanded {
+                    // Inbox (pinned)
+                    projectRow(projectService.inbox)
+
+                    // User projects (alphabetical)
+                    ForEach(projectService.userProjects) { project in
+                        if renamingProjectID == project.id {
+                            renameField(project: project)
+                        } else {
+                            projectRow(project)
+                                .contextMenu {
+                                    Button("Rename") {
+                                        renameText = project.name
+                                        renamingProjectID = project.id
+                                    }
+                                    Button("Delete", role: .destructive) {
+                                        coordinator.deleteProject(id: project.id)
+                                    }
+                                }
+                        }
+                    }
+
+                    if isAddingProject {
+                        TextField("Project name", text: $newProjectName)
+                            .textFieldStyle(.roundedBorder)
+                            .focused($isNewProjectFieldFocused)
+                            .onSubmit {
+                                if !newProjectName.isEmpty {
+                                    try? projectService.createProject(name: newProjectName)
+                                }
+                                newProjectName = ""
+                                isAddingProject = false
+                            }
+                            .onExitCommand {
+                                newProjectName = ""
+                                isAddingProject = false
+                            }
+                            .onChange(of: isNewProjectFieldFocused) { _, focused in
+                                if !focused {
+                                    newProjectName = ""
+                                    isAddingProject = false
+                                }
+                            }
+                            .onAppear {
+                                isNewProjectFieldFocused = true
+                            }
+                    }
                 }
             }
 
             // Status section
-            Section("Status") {
-                statusRow(.toRead)
-                statusRow(.reading)
-                statusRow(.archived)
+            Section {
+                sectionHeader("Status", isExpanded: $isStatusExpanded)
+
+                if isStatusExpanded {
+                    statusRow(.toRead)
+                    statusRow(.reading)
+                    statusRow(.archived)
+                }
             }
         }
         .navigationTitle("Papyro")
@@ -103,7 +109,7 @@ struct SidebarView: View {
             Label(project.name, systemImage: project.isInbox ? "tray" : "folder")
             Spacer()
             Text("\(count)")
-                .font(.caption)
+                .monospacedDigit()
                 .foregroundStyle(.secondary)
         }
         .tag(SidebarItem.project(project.id))
@@ -135,7 +141,6 @@ struct SidebarView: View {
                 Text(status.displayName)
                 Spacer()
                 Text("\(count)")
-                    .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
@@ -143,6 +148,37 @@ struct SidebarView: View {
         .padding(.vertical, 2)
         .background(isSelected ? Color.accentColor.opacity(0.1) : .clear)
         .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+
+    @ViewBuilder
+    private func sectionHeader<Trailing: View>(
+        _ title: String,
+        isExpanded: Binding<Bool>,
+        @ViewBuilder trailing: () -> Trailing = { EmptyView() }
+    ) -> some View {
+        HStack(spacing: 6) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.wrappedValue.toggle()
+                }
+            } label: {
+                HStack(spacing: 5) {
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.tertiary)
+                        .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
+                    Text(title)
+                        .font(.system(.callout, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                }
+            }
+            .buttonStyle(.plain)
+
+            Spacer()
+
+            trailing()
+        }
+        .listRowSeparator(.hidden)
     }
 
     @ViewBuilder
