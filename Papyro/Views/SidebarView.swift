@@ -8,6 +8,9 @@ struct SidebarView: View {
     @State private var newProjectName = ""
     @State private var renamingProjectID: UUID?
     @State private var renameText = ""
+    @State private var isProjectsExpanded = true
+    @State private var isStatusExpanded = true
+    @FocusState private var isNewProjectFieldFocused: Bool
 
     private var projectService: ProjectService {
         coordinator.projectService
@@ -23,61 +26,75 @@ struct SidebarView: View {
 
             // Projects section
             Section {
-                // Inbox (pinned)
-                projectRow(projectService.inbox)
+                DisclosureGroup(isExpanded: $isProjectsExpanded) {
+                    // Inbox (pinned)
+                    projectRow(projectService.inbox)
 
-                // User projects (alphabetical)
-                ForEach(projectService.userProjects) { project in
-                    if renamingProjectID == project.id {
-                        renameField(project: project)
-                    } else {
-                        projectRow(project)
-                            .contextMenu {
-                                Button("Rename") {
-                                    renameText = project.name
-                                    renamingProjectID = project.id
+                    // User projects (alphabetical)
+                    ForEach(projectService.userProjects) { project in
+                        if renamingProjectID == project.id {
+                            renameField(project: project)
+                        } else {
+                            projectRow(project)
+                                .contextMenu {
+                                    Button("Rename") {
+                                        renameText = project.name
+                                        renamingProjectID = project.id
+                                    }
+                                    Button("Delete", role: .destructive) {
+                                        coordinator.deleteProject(id: project.id)
+                                    }
                                 }
-                                Button("Delete", role: .destructive) {
-                                    coordinator.deleteProject(id: project.id)
+                        }
+                    }
+
+                    if isAddingProject {
+                        TextField("Project name", text: $newProjectName)
+                            .textFieldStyle(.roundedBorder)
+                            .focused($isNewProjectFieldFocused)
+                            .onSubmit {
+                                if !newProjectName.isEmpty {
+                                    try? projectService.createProject(name: newProjectName)
+                                }
+                                newProjectName = ""
+                                isAddingProject = false
+                            }
+                            .onExitCommand {
+                                newProjectName = ""
+                                isAddingProject = false
+                            }
+                            .onChange(of: isNewProjectFieldFocused) { _, focused in
+                                if !focused {
+                                    newProjectName = ""
+                                    isAddingProject = false
                                 }
                             }
                     }
-                }
-
-                if isAddingProject {
-                    TextField("Project name", text: $newProjectName)
-                        .textFieldStyle(.roundedBorder)
-                        .onSubmit {
-                            if !newProjectName.isEmpty {
-                                try? projectService.createProject(name: newProjectName)
-                            }
-                            newProjectName = ""
-                            isAddingProject = false
+                } label: {
+                    HStack {
+                        Text("Projects")
+                        Spacer()
+                        Button {
+                            isAddingProject = true
+                            isNewProjectFieldFocused = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.caption)
                         }
-                        .onExitCommand {
-                            newProjectName = ""
-                            isAddingProject = false
-                        }
-                }
-            } header: {
-                HStack {
-                    Text("Projects")
-                    Spacer()
-                    Button {
-                        isAddingProject = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.caption)
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
 
             // Status section
-            Section("Status") {
-                statusRow(.toRead)
-                statusRow(.reading)
-                statusRow(.archived)
+            Section {
+                DisclosureGroup(isExpanded: $isStatusExpanded) {
+                    statusRow(.toRead)
+                    statusRow(.reading)
+                    statusRow(.archived)
+                } label: {
+                    Text("Status")
+                }
             }
         }
         .navigationTitle("Papyro")
