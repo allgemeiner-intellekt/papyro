@@ -8,6 +8,7 @@ class AppState {
     var selectedPaperId: UUID?
     var isOnboarding: Bool = true
     var isEditingText: Bool = false
+    var searchText: String = ""
 
     var visibleColumns: Set<PaperColumn> = PaperColumn.defaultVisible
     var sortColumn: PaperColumn = .dateAdded
