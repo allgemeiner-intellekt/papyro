@@ -193,7 +193,7 @@ private struct ColumnHeaderBar: View {
     let onTapColumn: (PaperColumn) -> Void
     let onToggleColumn: (PaperColumn, Bool) -> Void
 
-    @State private var dragStartWidth: CGFloat = 0
+    @State private var dragState: (column: PaperColumn, startWidth: CGFloat, startX: CGFloat)?
 
     var body: some View {
         HStack(spacing: 0) {
@@ -253,16 +253,18 @@ private struct ColumnHeaderBar: View {
             .contentShape(Rectangle().size(width: 8, height: 20))
             .cursor(.resizeLeftRight)
             .gesture(
-                DragGesture(minimumDistance: 1)
+                DragGesture(minimumDistance: 1, coordinateSpace: .global)
                     .onChanged { value in
-                        if dragStartWidth == 0 {
-                            dragStartWidth = widthFor(column)
+                        if dragState?.column != column {
+                            dragState = (column, widthFor(column), value.startLocation.x)
                         }
-                        let newWidth = max(column.minWidth, dragStartWidth + value.translation.width)
+                        guard let state = dragState else { return }
+                        let delta = value.location.x - state.startX
+                        let newWidth = max(column.minWidth, state.startWidth + delta)
                         columnWidths[column] = newWidth
                     }
                     .onEnded { _ in
-                        dragStartWidth = 0
+                        dragState = nil
                     }
             )
     }

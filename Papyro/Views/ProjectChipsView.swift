@@ -6,6 +6,11 @@ struct ProjectChipsView: View {
     let projects: [Project]
     let onRemove: (Project) -> Void
     let onAdd: (Project) -> Void
+    let onCreateProject: (String) -> Void
+
+    @State private var isAddingNew = false
+    @State private var newProjectName = ""
+    @FocusState private var isNewProjectFieldFocused: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -41,17 +46,44 @@ struct ProjectChipsView: View {
                             onAdd(project)
                         }
                     }
+                    if !availableProjects.isEmpty {
+                        Divider()
+                    }
+                    Button("New Project...") {
+                        isAddingNew = true
+                        isNewProjectFieldFocused = true
+                    }
                 } label: {
-                    Label("Add", systemImage: "plus")
-                        .font(.caption)
-                        .padding(.horizontal, 10)
-                        .padding(.vertical, 5)
-                        .background(Color.secondary.opacity(0.1))
-                        .clipShape(Capsule())
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus")
+                        Text("Add")
+                    }
+                    .font(.caption)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(Color.secondary.opacity(0.1))
+                    .clipShape(Capsule())
                 }
                 .menuStyle(.borderlessButton)
+                .menuIndicator(.hidden)
                 .fixedSize()
-                .disabled(availableProjects.isEmpty)
+            }
+
+            if isAddingNew {
+                TextField("Project name", text: $newProjectName)
+                    .textFieldStyle(.roundedBorder)
+                    .focused($isNewProjectFieldFocused)
+                    .onSubmit {
+                        if !newProjectName.isEmpty {
+                            onCreateProject(newProjectName)
+                        }
+                        newProjectName = ""
+                        isAddingNew = false
+                    }
+                    .onExitCommand {
+                        newProjectName = ""
+                        isAddingNew = false
+                    }
             }
         }
     }

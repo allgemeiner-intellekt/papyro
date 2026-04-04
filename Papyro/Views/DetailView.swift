@@ -35,6 +35,11 @@ struct DetailView: View {
                             },
                             onAdd: { project in
                                 coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                            },
+                            onCreateProject: { name in
+                                if let project = try? coordinator.projectService.createProject(name: name) {
+                                    coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                                }
                             }
                         )
                         Divider()
