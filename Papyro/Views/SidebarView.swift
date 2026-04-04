@@ -10,6 +10,8 @@ struct SidebarView: View {
     @State private var renameText = ""
     @State private var isProjectsExpanded = true
     @State private var isStatusExpanded = true
+    @State private var isProjectsHeaderHovered = false
+    @State private var isStatusHeaderHovered = false
     @FocusState private var isNewProjectFieldFocused: Bool
 
     private var projectService: ProjectService {
@@ -72,7 +74,7 @@ struct SidebarView: View {
                     }
                 }
             } header: {
-                sectionHeader("Projects", isExpanded: $isProjectsExpanded) {
+                sectionHeader("Projects", isExpanded: $isProjectsExpanded, isHovered: $isProjectsHeaderHovered) {
                     Button {
                         isAddingProject = true
                         isNewProjectFieldFocused = true
@@ -84,7 +86,7 @@ struct SidebarView: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .padding(.trailing, 7)
+                    .padding(.trailing, 3)
                 }
             }
             .collapsible(false)
@@ -97,7 +99,7 @@ struct SidebarView: View {
                     statusRow(.archived)
                 }
             } header: {
-                sectionHeader("Status", isExpanded: $isStatusExpanded)
+                sectionHeader("Status", isExpanded: $isStatusExpanded, isHovered: $isStatusHeaderHovered)
             }
             .collapsible(false)
         }
@@ -158,28 +160,39 @@ struct SidebarView: View {
     private func sectionHeader<Actions: View>(
         _ title: String,
         isExpanded: Binding<Bool>,
+        isHovered: Binding<Bool>,
         @ViewBuilder actions: () -> Actions = { EmptyView() }
     ) -> some View {
         HStack(spacing: 4) {
-            HStack(spacing: 4) {
-                Image(systemName: "chevron.right")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.tertiary)
-                    .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
-                    .frame(width: 10)
+            Image(systemName: "chevron.right")
+                .font(.caption2.weight(.semibold))
+                .foregroundStyle(isHovered.wrappedValue ? .secondary : .tertiary)
+                .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
+                .frame(width: 10)
 
-                Text(title)
-            }
-            .contentShape(Rectangle())
-            .onTapGesture {
-                withAnimation(.easeInOut(duration: 0.2)) {
-                    isExpanded.wrappedValue.toggle()
-                }
-            }
+            Text(title)
 
             Spacer()
 
             actions()
+        }
+        .padding(.vertical, 2)
+        .padding(.horizontal, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(isHovered.wrappedValue ? Color.primary.opacity(0.06) : .clear)
+                .shadow(color: .black.opacity(isHovered.wrappedValue ? 0.08 : 0), radius: 2, y: 1)
+        )
+        .contentShape(Rectangle())
+        .onHover { hovering in
+            withAnimation(.easeInOut(duration: 0.15)) {
+                isHovered.wrappedValue = hovering
+            }
+        }
+        .onTapGesture {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                isExpanded.wrappedValue.toggle()
+            }
         }
     }
 
