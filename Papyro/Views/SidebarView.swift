@@ -86,7 +86,7 @@ struct SidebarView: View {
                             .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
-                    .padding(.trailing, 3)
+                    .padding(.trailing, 7)
                 }
             }
             .collapsible(false)
@@ -177,11 +177,12 @@ struct SidebarView: View {
             actions()
         }
         .padding(.vertical, 2)
-        .padding(.horizontal, 4)
         .background(
             RoundedRectangle(cornerRadius: 5)
                 .fill(isHovered.wrappedValue ? Color.primary.opacity(0.06) : .clear)
                 .shadow(color: .black.opacity(isHovered.wrappedValue ? 0.08 : 0), radius: 2, y: 1)
+                .padding(.leading, -4)
+                .padding(.trailing, 8)
         )
         .contentShape(Rectangle())
         .onHover { hovering in
