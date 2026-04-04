@@ -10,8 +10,6 @@ struct SidebarView: View {
     @State private var renameText = ""
     @FocusState private var isNewProjectFieldFocused: Bool
     @FocusState private var isRenameFieldFocused: Bool
-    @State private var isProjectsExpanded = true
-    @State private var isStatusExpanded = true
 
     private var projectService: ProjectService {
         coordinator.projectService
@@ -26,7 +24,7 @@ struct SidebarView: View {
                 .tag(SidebarItem.allPapers)
 
             // Projects section
-            Section(isExpanded: $isProjectsExpanded) {
+            Section {
                 // Inbox (pinned)
                 projectRow(projectService.inbox)
 
@@ -88,12 +86,10 @@ struct SidebarView: View {
             }
 
             // Status section
-            Section(isExpanded: $isStatusExpanded) {
+            Section("Status") {
                 statusRow(.toRead)
                 statusRow(.reading)
                 statusRow(.archived)
-            } header: {
-                Text("Status")
             }
         }
         .navigationTitle("Papyro")
