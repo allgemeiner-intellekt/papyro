@@ -8,10 +8,6 @@ struct SidebarView: View {
     @State private var newProjectName = ""
     @State private var renamingProjectID: UUID?
     @State private var renameText = ""
-    @FocusState private var isNewProjectFieldFocused: Bool
-    @FocusState private var isRenameFieldFocused: Bool
-    @State private var isProjectsExpanded = true
-    @State private var isStatusExpanded = true
 
     private var projectService: ProjectService {
         coordinator.projectService
@@ -26,7 +22,7 @@ struct SidebarView: View {
                 .tag(SidebarItem.allPapers)
 
             // Projects section
-            Section(isExpanded: $isProjectsExpanded) {
+            Section {
                 // Inbox (pinned)
                 projectRow(projectService.inbox)
 
@@ -51,7 +47,6 @@ struct SidebarView: View {
                 if isAddingProject {
                     TextField("Project name", text: $newProjectName)
                         .textFieldStyle(.roundedBorder)
-                        .focused($isNewProjectFieldFocused)
                         .onSubmit {
                             if !newProjectName.isEmpty {
                                 try? projectService.createProject(name: newProjectName)
@@ -62,15 +57,6 @@ struct SidebarView: View {
                         .onExitCommand {
                             newProjectName = ""
                             isAddingProject = false
-                        }
-                        .onChange(of: isNewProjectFieldFocused) { _, focused in
-                            if !focused {
-                                newProjectName = ""
-                                isAddingProject = false
-                            }
-                        }
-                        .onAppear {
-                            isNewProjectFieldFocused = true
                         }
                 }
             } header: {
@@ -88,12 +74,10 @@ struct SidebarView: View {
             }
 
             // Status section
-            Section(isExpanded: $isStatusExpanded) {
+            Section("Status") {
                 statusRow(.toRead)
                 statusRow(.reading)
                 statusRow(.archived)
-            } header: {
-                Text("Status")
             }
         }
         .navigationTitle("Papyro")
@@ -153,7 +137,6 @@ struct SidebarView: View {
     private func renameField(project: Project) -> some View {
         TextField("Project name", text: $renameText)
             .textFieldStyle(.roundedBorder)
-            .focused($isRenameFieldFocused)
             .onSubmit {
                 if !renameText.isEmpty {
                     try? projectService.renameProject(id: project.id, newName: renameText)
@@ -162,14 +145,6 @@ struct SidebarView: View {
             }
             .onExitCommand {
                 renamingProjectID = nil
-            }
-            .onChange(of: isRenameFieldFocused) { _, focused in
-                if !focused {
-                    renamingProjectID = nil
-                }
-            }
-            .onAppear {
-                isRenameFieldFocused = true
             }
     }
 }
