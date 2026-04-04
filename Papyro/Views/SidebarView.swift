@@ -161,20 +161,21 @@ struct SidebarView: View {
         @ViewBuilder actions: () -> Actions = { EmptyView() }
     ) -> some View {
         HStack(spacing: 4) {
-            Button {
+            HStack(spacing: 4) {
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.tertiary)
+                    .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
+                    .frame(width: 10)
+
+                Text(title)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
                 withAnimation(.easeInOut(duration: 0.2)) {
                     isExpanded.wrappedValue.toggle()
                 }
-            } label: {
-                Image(systemName: "chevron.right")
-                    .font(.caption2.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
-                    .frame(width: 10)
             }
-            .buttonStyle(.plain)
-
-            Text(title)
 
             Spacer()
 
