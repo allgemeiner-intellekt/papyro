@@ -1,36 +1,44 @@
-# Plan: Sidebar UI Polish — Collapse, Plus Button, Click-to-Cancel
+# Plan: Sidebar Visual Polish — Chevron, Alignment, Spacing
 
 ## Context
-The sidebar's "Projects" section header has three UX issues visible in the screenshots:
-1. The collapse chevron only appears on hover (macOS default `Section` behavior), which feels inconsistent
-2. The "+" button shifts position when the chevron appears/disappears
-3. The "add project" text field can only be cancelled with Escape (`onExitCommand`), not by clicking elsewhere
+Using `DisclosureGroup` inside `Section` inside `List` creates three visual problems:
+1. The system disclosure triangle is too small/subtle
+2. The "+" button and count numbers don't share a right-edge alignment line
+3. DisclosureGroup adds an extra indentation level, pushing content rightward
+
+All three stem from the same root cause: `DisclosureGroup`'s built-in layout fighting with `Section` and `List` padding.
+
+## Approach
+Replace `Section { DisclosureGroup { ... } }` with plain `Section(header:)` using `.collapsible(false)` to suppress macOS default hover chevron, then add a **custom chevron button** in the header for manual expand/collapse. This gives full control over:
+- Chevron size and style (use `chevron.right` with rotation animation)
+- Right-edge alignment (chevron and "+" in the header, counts in rows — all sharing the same trailing edge)
+- Indentation (no extra DisclosureGroup nesting layer)
 
 ## Changes
 
 **File:** `Papyro/Views/SidebarView.swift`
 
-### 1. Remove default collapsible behavior, make section always expanded
-Replace `Section { ... } header: { ... }` (lines 25-74) with a non-collapsible structure using a plain `Section` with a fixed header that has no disclosure indicator. Use `Section(header:)` with `.collapsible(false)` or restructure to avoid the default disclosure chevron entirely.
+### 1. Replace DisclosureGroup with custom collapsible sections
+- Keep `@State private var isProjectsExpanded/isStatusExpanded`
+- Use `Section { ... } header: { ... }.collapsible(false)` 
+- In the header HStack: section title + Spacer + "+" button (Projects only) + chevron button
+- Chevron: `Image(systemName: "chevron.right")` with `.rotationEffect` based on expanded state, animated
+- Conditionally show section content with `if isProjectsExpanded { ... }`
 
-Approach: Keep `Section` but apply the SwiftUI modifier to disable collapsibility. If that's not available on the target macOS version, restructure to use a `Text` header + manual grouping so macOS doesn't inject its hover chevron.
+### 2. Fix right-edge alignment
+- The "+" and chevron sit in the section header's HStack, which shares the same trailing edge as list rows
+- Counts in rows use `Spacer()` + trailing text — same alignment system
+- Give the chevron a fixed small width so "+" position is stable
 
-### 2. Fix "+" button position
-Since removing the collapse chevron removes the layout shift, the "+" button will stay in a fixed position in the header `HStack`. No additional changes needed beyond fix #1.
-
-### 3. Add click-elsewhere-to-cancel for new project text field
-Add `.onLossOfFocus` behavior to the `TextField` at lines 48-61. Use `@FocusState` to track focus on the text field, and watch for focus loss to cancel adding:
-
-- Add `@FocusState private var isNewProjectFieldFocused: Bool` 
-- Apply `.focused($isNewProjectFieldFocused)` to the TextField
-- Set `isNewProjectFieldFocused = true` when `isAddingProject` becomes true (via `.onChange`)
-- Add `.onChange(of: isNewProjectFieldFocused)` — when focus is lost and field is empty or user clicked away, cancel the add operation
+### 3. Eliminate excess indentation
+- Removing DisclosureGroup removes its built-in indentation
+- Content goes directly inside `Section`, matching standard List row padding
 
 ## Verification
-1. Build: `xcodebuild -project Papyro.xcodeproj -scheme Papyro -configuration Debug build`
+1. `xcodebuild -project Papyro.xcodeproj -scheme Papyro -configuration Debug build`
 2. Open app and verify:
-   - "Projects" section header shows no collapse chevron (not on hover, not ever)
-   - "+" button stays fixed in position
-   - Click "+" to start adding a project, then click elsewhere in the sidebar — the text field should dismiss
-   - Adding a project by typing + Enter still works
-   - Escape to cancel still works
+   - Custom chevron always visible, visually prominent, animates on click
+   - "+" button and count numbers share a right-edge vertical line
+   - List items sit at normal indentation (no rightward drift)
+   - Collapse/expand still works for both sections
+   - Click-elsewhere-to-cancel still works for new project field

@@ -26,7 +26,7 @@ struct SidebarView: View {
 
             // Projects section
             Section {
-                DisclosureGroup(isExpanded: $isProjectsExpanded) {
+                if isProjectsExpanded {
                     // Inbox (pinned)
                     projectRow(projectService.inbox)
 
@@ -70,32 +70,32 @@ struct SidebarView: View {
                                 }
                             }
                     }
-                } label: {
-                    HStack {
-                        Text("Projects")
-                        Spacer()
-                        Button {
-                            isAddingProject = true
-                            isNewProjectFieldFocused = true
-                        } label: {
-                            Image(systemName: "plus")
-                                .font(.caption)
-                        }
-                        .buttonStyle(.plain)
+                }
+            } header: {
+                sectionHeader("Projects", isExpanded: $isProjectsExpanded) {
+                    Button {
+                        isAddingProject = true
+                        isNewProjectFieldFocused = true
+                    } label: {
+                        Image(systemName: "plus")
+                            .font(.caption)
                     }
+                    .buttonStyle(.plain)
                 }
             }
+            .collapsible(false)
 
             // Status section
             Section {
-                DisclosureGroup(isExpanded: $isStatusExpanded) {
+                if isStatusExpanded {
                     statusRow(.toRead)
                     statusRow(.reading)
                     statusRow(.archived)
-                } label: {
-                    Text("Status")
                 }
+            } header: {
+                sectionHeader("Status", isExpanded: $isStatusExpanded)
             }
+            .collapsible(false)
         }
         .navigationTitle("Papyro")
     }
@@ -148,6 +148,34 @@ struct SidebarView: View {
         .padding(.vertical, 2)
         .background(isSelected ? Color.accentColor.opacity(0.1) : .clear)
         .clipShape(RoundedRectangle(cornerRadius: 4))
+    }
+
+    @ViewBuilder
+    private func sectionHeader<Actions: View>(
+        _ title: String,
+        isExpanded: Binding<Bool>,
+        @ViewBuilder actions: () -> Actions = { EmptyView() }
+    ) -> some View {
+        HStack(spacing: 4) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.2)) {
+                    isExpanded.wrappedValue.toggle()
+                }
+            } label: {
+                Image(systemName: "chevron.right")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .rotationEffect(.degrees(isExpanded.wrappedValue ? 90 : 0))
+                    .frame(width: 10)
+            }
+            .buttonStyle(.plain)
+
+            Text(title)
+
+            Spacer()
+
+            actions()
+        }
     }
 
     @ViewBuilder
