@@ -20,6 +20,15 @@ struct PaperListView: View {
             result = result.filter { $0.status == status }
         }
 
+        // Filter by search text
+        let searchTokens = appState.searchText
+            .lowercased()
+            .split(separator: " ")
+            .map(String.init)
+        if !searchTokens.isEmpty {
+            result = result.filter { $0.matches(searchTokens: searchTokens) }
+        }
+
         // Sort
         result.sort { a, b in
             let ascending = appState.sortAscending
@@ -61,11 +70,15 @@ struct PaperListView: View {
 
         Group {
             if filteredPapers.isEmpty {
-                ContentUnavailableView(
-                    "No Papers",
-                    systemImage: "doc.text",
-                    description: Text("Drag and drop PDF files here to import them.")
-                )
+                if !appState.searchText.isEmpty {
+                    ContentUnavailableView.search(text: appState.searchText)
+                } else {
+                    ContentUnavailableView(
+                        "No Papers",
+                        systemImage: "doc.text",
+                        description: Text("Drag and drop PDF files here to import them.")
+                    )
+                }
             } else {
                 List(selection: $appState.selectedPaperId) {
                     Section {
@@ -109,6 +122,7 @@ struct PaperListView: View {
                 .listStyle(.inset(alternatesRowBackgrounds: true))
             }
         }
+        .searchable(text: $appState.searchText, prompt: "Search papers")
         .navigationTitle(navigationTitle)
         .dropDestination(for: URL.self) { urls, _ in
             let pdfURLs = urls.filter { $0.pathExtension.lowercased() == "pdf" }
