@@ -73,6 +73,12 @@ struct PaperListView: View {
             if filteredPapers.isEmpty {
                 if !appState.searchText.isEmpty {
                     ContentUnavailableView.search(text: appState.searchText)
+                } else if let status = appState.selectedStatusFilter {
+                    ContentUnavailableView(
+                        "No \(status.displayName) Papers",
+                        systemImage: "line.3.horizontal.decrease.circle",
+                        description: Text("No papers are marked as \(status.displayName.lowercased()).")
+                    )
                 } else {
                     ContentUnavailableView(
                         "No Papers",
@@ -133,6 +139,9 @@ struct PaperListView: View {
             }
         }
         .navigationTitle(navigationTitle)
+        .onChange(of: appState.selectedSidebarItem) {
+            appState.searchText = ""
+        }
         .dropDestination(for: URL.self) { urls, _ in
             let pdfURLs = urls.filter { $0.pathExtension.lowercased() == "pdf" }
             guard !pdfURLs.isEmpty else { return false }
