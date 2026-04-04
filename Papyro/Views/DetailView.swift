@@ -211,10 +211,12 @@ struct DetailView: View {
                 Button("Open PDF") {
                     openPDF(paper)
                 }
+                .buttonStyle(.bordered)
 
                 Button("Reveal in Finder") {
                     revealInFinder(paper)
                 }
+                .buttonStyle(.bordered)
 
                 if paper.importState == .unresolved {
                     Button("Retry Lookup") {
@@ -222,6 +224,7 @@ struct DetailView: View {
                             await coordinator.retryMetadataLookup(for: paper.id)
                         }
                     }
+                    .buttonStyle(.bordered)
                 }
 
                 Button("Edit") {
@@ -233,6 +236,7 @@ struct DetailView: View {
                     editAbstract = paper.abstract ?? ""
                     isEditing = true
                 }
+                .buttonStyle(.bordered)
             }
         }
     }

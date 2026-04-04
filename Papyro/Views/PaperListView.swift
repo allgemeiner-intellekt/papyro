@@ -59,46 +59,72 @@ struct PaperListView: View {
     var body: some View {
         @Bindable var appState = appState
 
-        VStack(spacing: 0) {
-            // Column header bar
-            ColumnHeaderBar(
-                visibleColumns: appState.visibleColumns,
-                sortColumn: appState.sortColumn,
-                sortAscending: appState.sortAscending,
-                onTapColumn: { column in
-                    if appState.sortColumn == column {
-                        appState.sortAscending.toggle()
-                    } else {
-                        appState.sortColumn = column
-                        appState.sortAscending = true
-                    }
-                },
-                onToggleColumn: { column, isOn in
-                    if isOn {
-                        appState.visibleColumns.insert(column)
-                    } else {
-                        appState.visibleColumns.remove(column)
-                    }
-                }
-            )
-
+        Group {
             if filteredPapers.isEmpty {
-                ContentUnavailableView(
-                    "No Papers",
-                    systemImage: "doc.text",
-                    description: Text("Drag and drop PDF files here to import them.")
-                )
-            } else {
-                List(filteredPapers, selection: $appState.selectedPaperId) { paper in
-                    PaperRowView(
-                        paper: paper,
+                VStack(spacing: 0) {
+                    ColumnHeaderBar(
                         visibleColumns: appState.visibleColumns,
-                        projects: coordinator.projectService.projects
+                        sortColumn: appState.sortColumn,
+                        sortAscending: appState.sortAscending,
+                        onTapColumn: { column in
+                            if appState.sortColumn == column {
+                                appState.sortAscending.toggle()
+                            } else {
+                                appState.sortColumn = column
+                                appState.sortAscending = true
+                            }
+                        },
+                        onToggleColumn: { column, isOn in
+                            if isOn {
+                                appState.visibleColumns.insert(column)
+                            } else {
+                                appState.visibleColumns.remove(column)
+                            }
+                        }
                     )
-                    .tag(paper.id)
-                    .draggable(paper.id.uuidString)
-                    .contextMenu {
-                        paperContextMenu(paper: paper)
+                    ContentUnavailableView(
+                        "No Papers",
+                        systemImage: "doc.text",
+                        description: Text("Drag and drop PDF files here to import them.")
+                    )
+                    .frame(maxHeight: .infinity)
+                }
+            } else {
+                List(selection: $appState.selectedPaperId) {
+                    Section {
+                        ForEach(filteredPapers) { paper in
+                            PaperRowView(
+                                paper: paper,
+                                visibleColumns: appState.visibleColumns,
+                                projects: coordinator.projectService.projects
+                            )
+                            .tag(paper.id)
+                            .draggable(paper.id.uuidString)
+                            .contextMenu {
+                                paperContextMenu(paper: paper)
+                            }
+                        }
+                    } header: {
+                        ColumnHeaderBar(
+                            visibleColumns: appState.visibleColumns,
+                            sortColumn: appState.sortColumn,
+                            sortAscending: appState.sortAscending,
+                            onTapColumn: { column in
+                                if appState.sortColumn == column {
+                                    appState.sortAscending.toggle()
+                                } else {
+                                    appState.sortColumn = column
+                                    appState.sortAscending = true
+                                }
+                            },
+                            onToggleColumn: { column, isOn in
+                                if isOn {
+                                    appState.visibleColumns.insert(column)
+                                } else {
+                                    appState.visibleColumns.remove(column)
+                                }
+                            }
+                        )
                     }
                 }
             }
@@ -188,10 +214,6 @@ private struct ColumnHeaderBar: View {
 
     var body: some View {
         HStack(spacing: 0) {
-            // Title column (no sort — always present)
-            Spacer()
-                .frame(maxWidth: .infinity)
-
             ForEach(sortedVisibleColumns, id: \.self) { column in
                 Button {
                     onTapColumn(column)
@@ -207,12 +229,10 @@ private struct ColumnHeaderBar: View {
                     .foregroundStyle(sortColumn == column ? .primary : .secondary)
                 }
                 .buttonStyle(.plain)
-                .frame(width: columnWidth(for: column), alignment: .leading)
+                .frame(width: column.columnWidth, alignment: .leading)
             }
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 6)
-        .background(.bar)
+        .padding(.vertical, 4)
         .contextMenu {
             ForEach(PaperColumn.allCases) { column in
                 Toggle(column.displayName, isOn: Binding(
@@ -229,17 +249,4 @@ private struct ColumnHeaderBar: View {
         PaperColumn.allCases.filter { visibleColumns.contains($0) }
     }
 
-    private func columnWidth(for column: PaperColumn) -> CGFloat {
-        switch column {
-        case .authors: 120
-        case .year: 50
-        case .journal: 100
-        case .status: 70
-        case .dateAdded, .dateModified: 80
-        case .doi, .arxivId: 140
-        case .projects: 120
-        case .metadataSource: 80
-        case .pmid, .isbn: 100
-        }
-    }
 }

@@ -13,12 +13,9 @@ struct PaperRowView: View {
 
             // Row 2: Metadata columns
             HStack(spacing: 0) {
-                Spacer()
-                    .frame(maxWidth: .infinity)
-
                 ForEach(sortedVisibleColumns, id: \.self) { column in
                     columnValue(for: column)
-                        .frame(width: columnWidth(for: column), alignment: .leading)
+                        .frame(width: column.columnWidth, alignment: .leading)
                 }
             }
             .font(.system(size: 12))
@@ -80,19 +77,6 @@ struct PaperRowView: View {
         return authors.count > 1 ? "\(surname) et al." : surname
     }
 
-    private func columnWidth(for column: PaperColumn) -> CGFloat {
-        switch column {
-        case .authors: 120
-        case .year: 50
-        case .journal: 100
-        case .status: 70
-        case .dateAdded, .dateModified: 80
-        case .doi, .arxivId: 140
-        case .projects: 120
-        case .metadataSource: 80
-        case .pmid, .isbn: 100
-        }
-    }
 }
 
 struct BadgeView: View {

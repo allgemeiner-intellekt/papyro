@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 enum PaperColumn: String, Codable, CaseIterable, Identifiable {
     case authors
@@ -35,5 +36,19 @@ enum PaperColumn: String, Codable, CaseIterable, Identifiable {
 
     static var defaultVisible: Set<PaperColumn> {
         [.authors, .year, .journal, .status, .dateAdded]
+    }
+
+    var columnWidth: CGFloat {
+        switch self {
+        case .authors: 120
+        case .year: 50
+        case .journal: 100
+        case .status: 70
+        case .dateAdded, .dateModified: 80
+        case .doi, .arxivId: 140
+        case .projects: 120
+        case .metadataSource: 80
+        case .pmid, .isbn: 100
+        }
     }
 }
