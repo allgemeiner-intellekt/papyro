@@ -152,8 +152,12 @@ struct SidebarView: View {
         }
         .buttonStyle(.plain)
         .padding(.vertical, 2)
-        .background(isSelected ? Color.accentColor.opacity(0.1) : .clear)
-        .clipShape(RoundedRectangle(cornerRadius: 4))
+        .background(
+            RoundedRectangle(cornerRadius: 5)
+                .fill(isSelected ? status.color.opacity(0.12) : .clear)
+                .padding(.leading, -6)
+                .padding(.trailing, -6)
+        )
     }
 
     @ViewBuilder
