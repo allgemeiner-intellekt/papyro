@@ -79,8 +79,12 @@ struct SidebarView: View {
                     } label: {
                         Image(systemName: "plus")
                             .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .frame(width: 20, height: 16)
+                            .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .padding(.trailing, 7)
                 }
             }
             .collapsible(false)
