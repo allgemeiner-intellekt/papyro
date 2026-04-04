@@ -57,6 +57,9 @@ struct DetailView: View {
             .onChange(of: appState.selectedPaperId) {
                 isEditing = false
             }
+            .onChange(of: isEditing) {
+                appState.isEditingText = isEditing
+            }
         } else {
             ContentUnavailableView(
                 "Select a Paper",

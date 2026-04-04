@@ -69,6 +69,7 @@ struct MainView: View {
     }
 
     private func setSelectedPaperStatus(_ status: ReadingStatus) -> KeyPress.Result {
+        guard !appState.isEditingText else { return .ignored }
         guard let paperId = appState.selectedPaperId else { return .ignored }
         coordinator.updatePaperStatus(paperId: paperId, status: status)
         return .handled

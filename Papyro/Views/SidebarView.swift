@@ -67,6 +67,7 @@ struct SidebarView: View {
                                 isAddingProject = false
                             }
                             .onChange(of: isNewProjectFieldFocused) { _, focused in
+                                appState.isEditingText = focused
                                 if !focused {
                                     newProjectName = ""
                                     isAddingProject = false
@@ -211,6 +212,8 @@ struct SidebarView: View {
     private func renameField(project: Project) -> some View {
         TextField("Project name", text: $renameText)
             .textFieldStyle(.roundedBorder)
+            .onAppear { appState.isEditingText = true }
+            .onDisappear { appState.isEditingText = false }
             .onSubmit {
                 if !renameText.isEmpty {
                     try? projectService.renameProject(id: project.id, newName: renameText)

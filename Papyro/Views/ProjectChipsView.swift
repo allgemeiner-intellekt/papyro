@@ -8,6 +8,7 @@ struct ProjectChipsView: View {
     let onAdd: (Project) -> Void
     let onCreateProject: (String) -> Void
 
+    @Environment(AppState.self) private var appState
     @State private var isAddingNew = false
     @State private var newProjectName = ""
     @FocusState private var isNewProjectFieldFocused: Bool
@@ -57,6 +58,9 @@ struct ProjectChipsView: View {
                     .onExitCommand {
                         newProjectName = ""
                         isAddingNew = false
+                    }
+                    .onChange(of: isNewProjectFieldFocused) { _, focused in
+                        appState.isEditingText = focused
                     }
             }
         }
