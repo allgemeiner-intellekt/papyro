@@ -82,4 +82,83 @@ struct PaperTests {
         #expect(paper.authors.isEmpty)
         #expect(paper.projectIDs.isEmpty)
     }
+
+    @Test func matchesTitleSearch() {
+        let paper = makePaper(title: "Attention Is All You Need", authors: ["Vaswani, A."])
+        #expect(paper.matches(searchTokens: ["attention"]))
+        #expect(!paper.matches(searchTokens: ["transformer"]))
+    }
+
+    @Test func matchesAuthorSearch() {
+        let paper = makePaper(title: "Some Paper", authors: ["Smith, J.", "Chen, L."])
+        #expect(paper.matches(searchTokens: ["smith"]))
+        #expect(paper.matches(searchTokens: ["chen"]))
+    }
+
+    @Test func matchesMultipleTokensWithANDLogic() {
+        let paper = makePaper(title: "Neural Plasticity", authors: ["Smith, J."], year: 2024)
+        #expect(paper.matches(searchTokens: ["smith", "2024"]))
+        #expect(paper.matches(searchTokens: ["neural", "smith"]))
+        #expect(!paper.matches(searchTokens: ["smith", "2025"]))
+    }
+
+    @Test func matchesIdentifierFields() {
+        let paper = makePaper(title: "Test", doi: "10.1038/s41586-024-07998-6", arxivId: "2401.12345")
+        #expect(paper.matches(searchTokens: ["10.1038"]))
+        #expect(paper.matches(searchTokens: ["2401.12345"]))
+    }
+
+    @Test func matchesJournalAndAbstract() {
+        let paper = makePaper(title: "Test", journal: "Nature", abstract: "We study deep learning")
+        #expect(paper.matches(searchTokens: ["nature"]))
+        #expect(paper.matches(searchTokens: ["deep", "learning"]))
+    }
+
+    @Test func emptyTokensMatchesEverything() {
+        let paper = makePaper(title: "Anything")
+        #expect(paper.matches(searchTokens: []))
+    }
+
+    @Test func matchesIsCaseInsensitive() {
+        let paper = makePaper(title: "Attention Is All You Need")
+        #expect(paper.matches(searchTokens: ["ATTENTION"]))
+        #expect(paper.matches(searchTokens: ["Attention"]))
+    }
+
+    private func makePaper(
+        title: String = "Untitled",
+        authors: [String] = [],
+        year: Int? = nil,
+        journal: String? = nil,
+        abstract: String? = nil,
+        doi: String? = nil,
+        arxivId: String? = nil,
+        pmid: String? = nil,
+        isbn: String? = nil
+    ) -> Paper {
+        Paper(
+            id: UUID(),
+            canonicalId: nil,
+            title: title,
+            authors: authors,
+            year: year,
+            journal: journal,
+            doi: doi,
+            arxivId: arxivId,
+            pmid: pmid,
+            isbn: isbn,
+            abstract: abstract,
+            url: nil,
+            pdfPath: "papers/test.pdf",
+            pdfFilename: "test.pdf",
+            notePath: nil,
+            projectIDs: [],
+            status: .toRead,
+            dateAdded: Date(),
+            dateModified: Date(),
+            metadataSource: .none,
+            metadataResolved: false,
+            importState: .resolved
+        )
+    }
 }

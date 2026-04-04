@@ -78,3 +78,21 @@ enum ImportState: String, Codable {
     case resolved
     case unresolved
 }
+
+extension Paper {
+    func matches(searchTokens: [String]) -> Bool {
+        if searchTokens.isEmpty { return true }
+        var parts: [String] = []
+        parts.append(title)
+        parts.append(authors.joined(separator: " "))
+        parts.append(year.map(String.init) ?? "")
+        parts.append(journal ?? "")
+        parts.append(abstract ?? "")
+        parts.append(doi ?? "")
+        parts.append(arxivId ?? "")
+        parts.append(pmid ?? "")
+        parts.append(isbn ?? "")
+        let searchable = parts.joined(separator: " ").lowercased()
+        return searchTokens.allSatisfy { searchable.contains($0.lowercased()) }
+    }
+}
