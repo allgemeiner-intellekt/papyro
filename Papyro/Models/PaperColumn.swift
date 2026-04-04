@@ -38,7 +38,7 @@ enum PaperColumn: String, Codable, CaseIterable, Identifiable {
         [.authors, .year, .journal, .status, .dateAdded]
     }
 
-    var columnWidth: CGFloat {
+    var defaultWidth: CGFloat {
         switch self {
         case .authors: 120
         case .year: 50
@@ -50,5 +50,17 @@ enum PaperColumn: String, Codable, CaseIterable, Identifiable {
         case .metadataSource: 80
         case .pmid, .isbn: 100
         }
+    }
+
+    var minWidth: CGFloat {
+        switch self {
+        case .year: 40
+        case .status: 50
+        default: 60
+        }
+    }
+
+    static var defaultWidths: [PaperColumn: CGFloat] {
+        Dictionary(uniqueKeysWithValues: allCases.map { ($0, $0.defaultWidth) })
     }
 }

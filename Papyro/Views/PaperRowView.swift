@@ -3,6 +3,7 @@ import SwiftUI
 struct PaperRowView: View {
     let paper: Paper
     let visibleColumns: Set<PaperColumn>
+    let columnWidths: [PaperColumn: CGFloat]
     let projects: [Project]
 
     var body: some View {
@@ -13,9 +14,17 @@ struct PaperRowView: View {
 
             // Row 2: Metadata columns
             HStack(spacing: 0) {
-                ForEach(sortedVisibleColumns, id: \.self) { column in
+                let columns = sortedVisibleColumns
+                ForEach(columns, id: \.self) { column in
                     columnValue(for: column)
-                        .frame(width: column.columnWidth, alignment: .leading)
+                        .padding(.leading, 4)
+                        .frame(width: columnWidths[column] ?? column.defaultWidth, alignment: .leading)
+
+                    // Match the 5px resize handle space in the header
+                    if column != columns.last {
+                        Spacer()
+                            .frame(width: 5)
+                    }
                 }
             }
             .font(.system(size: 12))

@@ -61,34 +61,11 @@ struct PaperListView: View {
 
         Group {
             if filteredPapers.isEmpty {
-                VStack(spacing: 0) {
-                    ColumnHeaderBar(
-                        visibleColumns: appState.visibleColumns,
-                        sortColumn: appState.sortColumn,
-                        sortAscending: appState.sortAscending,
-                        onTapColumn: { column in
-                            if appState.sortColumn == column {
-                                appState.sortAscending.toggle()
-                            } else {
-                                appState.sortColumn = column
-                                appState.sortAscending = true
-                            }
-                        },
-                        onToggleColumn: { column, isOn in
-                            if isOn {
-                                appState.visibleColumns.insert(column)
-                            } else {
-                                appState.visibleColumns.remove(column)
-                            }
-                        }
-                    )
-                    ContentUnavailableView(
-                        "No Papers",
-                        systemImage: "doc.text",
-                        description: Text("Drag and drop PDF files here to import them.")
-                    )
-                    .frame(maxHeight: .infinity)
-                }
+                ContentUnavailableView(
+                    "No Papers",
+                    systemImage: "doc.text",
+                    description: Text("Drag and drop PDF files here to import them.")
+                )
             } else {
                 List(selection: $appState.selectedPaperId) {
                     Section {
@@ -96,6 +73,7 @@ struct PaperListView: View {
                             PaperRowView(
                                 paper: paper,
                                 visibleColumns: appState.visibleColumns,
+                                columnWidths: appState.columnWidths,
                                 projects: coordinator.projectService.projects
                             )
                             .tag(paper.id)
@@ -107,6 +85,7 @@ struct PaperListView: View {
                     } header: {
                         ColumnHeaderBar(
                             visibleColumns: appState.visibleColumns,
+                            columnWidths: $appState.columnWidths,
                             sortColumn: appState.sortColumn,
                             sortAscending: appState.sortAscending,
                             onTapColumn: { column in
@@ -208,32 +187,27 @@ struct PaperListView: View {
 
 private struct ColumnHeaderBar: View {
     let visibleColumns: Set<PaperColumn>
+    @Binding var columnWidths: [PaperColumn: CGFloat]
     let sortColumn: PaperColumn
     let sortAscending: Bool
     let onTapColumn: (PaperColumn) -> Void
     let onToggleColumn: (PaperColumn, Bool) -> Void
 
+    @State private var dragStartWidth: CGFloat = 0
+
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(sortedVisibleColumns, id: \.self) { column in
-                Button {
-                    onTapColumn(column)
-                } label: {
-                    HStack(spacing: 4) {
-                        Text(column.displayName)
-                        if sortColumn == column {
-                            Image(systemName: sortAscending ? "chevron.up" : "chevron.down")
-                                .font(.caption2)
-                        }
-                    }
-                    .font(.caption)
-                    .foregroundStyle(sortColumn == column ? .primary : .secondary)
+            let columns = sortedVisibleColumns
+            ForEach(columns, id: \.self) { column in
+                let isLast = column == columns.last
+
+                headerCell(for: column, isLast: isLast)
+
+                if !isLast {
+                    resizeHandle(for: column)
                 }
-                .buttonStyle(.plain)
-                .frame(width: column.columnWidth, alignment: .leading)
             }
         }
-        .padding(.vertical, 4)
         .contextMenu {
             ForEach(PaperColumn.allCases) { column in
                 Toggle(column.displayName, isOn: Binding(
@@ -246,8 +220,72 @@ private struct ColumnHeaderBar: View {
         }
     }
 
+    @ViewBuilder
+    private func headerCell(for column: PaperColumn, isLast: Bool) -> some View {
+        Button {
+            onTapColumn(column)
+        } label: {
+            HStack(spacing: 3) {
+                Text(column.displayName)
+                if sortColumn == column {
+                    Image(systemName: sortAscending ? "chevron.up" : "chevron.down")
+                        .font(.caption2)
+                        .fontWeight(.semibold)
+                }
+                Spacer()
+            }
+            .font(.system(size: 11))
+            .foregroundStyle(sortColumn == column ? .primary : .secondary)
+            .padding(.leading, 4)
+            .frame(height: 20)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .frame(width: isLast ? nil : widthFor(column), alignment: .leading)
+        .frame(maxWidth: isLast ? .infinity : nil, alignment: .leading)
+    }
+
+    private func resizeHandle(for column: PaperColumn) -> some View {
+        Rectangle()
+            .fill(Color.gray.opacity(0.3))
+            .frame(width: 1, height: 12)
+            .padding(.horizontal, 2)
+            .contentShape(Rectangle().size(width: 8, height: 20))
+            .cursor(.resizeLeftRight)
+            .gesture(
+                DragGesture(minimumDistance: 1)
+                    .onChanged { value in
+                        if dragStartWidth == 0 {
+                            dragStartWidth = widthFor(column)
+                        }
+                        let newWidth = max(column.minWidth, dragStartWidth + value.translation.width)
+                        columnWidths[column] = newWidth
+                    }
+                    .onEnded { _ in
+                        dragStartWidth = 0
+                    }
+            )
+    }
+
     private var sortedVisibleColumns: [PaperColumn] {
         PaperColumn.allCases.filter { visibleColumns.contains($0) }
     }
 
+    private func widthFor(_ column: PaperColumn) -> CGFloat {
+        columnWidths[column] ?? column.defaultWidth
+    }
+}
+
+// MARK: - Resize Cursor
+
+private extension View {
+    func cursor(_ cursor: NSCursor) -> some View {
+        onHover { inside in
+            if inside {
+                cursor.push()
+            } else {
+                NSCursor.pop()
+            }
+        }
+    }
 }

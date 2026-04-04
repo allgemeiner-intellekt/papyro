@@ -11,4 +11,5 @@ class AppState {
     var visibleColumns: Set<PaperColumn> = PaperColumn.defaultVisible
     var sortColumn: PaperColumn = .dateAdded
     var sortAscending: Bool = false
+    var columnWidths: [PaperColumn: CGFloat] = PaperColumn.defaultWidths
 }
