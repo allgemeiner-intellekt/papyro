@@ -13,6 +13,7 @@ class ImportCoordinator {
     private let metadataProvider: MetadataProvider
     private let indexService: IndexService
     let projectService: ProjectService
+    private let noteGenerator: NoteGenerator
 
     init(
         libraryRoot: URL,
@@ -21,7 +22,8 @@ class ImportCoordinator {
         fileService: FileService = FileService(),
         textExtractor: TextExtractor = TextExtractor(),
         identifierParser: IdentifierParser = IdentifierParser(),
-        indexService: IndexService = IndexService()
+        indexService: IndexService = IndexService(),
+        noteGenerator: NoteGenerator = NoteGenerator()
     ) {
         self.libraryRoot = libraryRoot
         self.metadataProvider = metadataProvider
@@ -30,6 +32,7 @@ class ImportCoordinator {
         self.textExtractor = textExtractor
         self.identifierParser = identifierParser
         self.indexService = indexService
+        self.noteGenerator = noteGenerator
     }
 
     func loadExistingPapers() {
@@ -159,6 +162,17 @@ class ImportCoordinator {
             try? indexService.save(finalPaper, in: libraryRoot)
             try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
         }
+
+        // Generate note
+        if let finalPaper = papers.first(where: { $0.id == paperId }) {
+            if let notePath = try? noteGenerator.generateNote(for: finalPaper, libraryRoot: libraryRoot) {
+                updatePaper(paperId) { $0.notePath = notePath }
+                if let updated = papers.first(where: { $0.id == paperId }) {
+                    try? indexService.save(updated, in: libraryRoot)
+                    try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+                }
+            }
+        }
     }
 
     func retryMetadataLookup(for paperId: UUID) async {
@@ -170,6 +184,17 @@ class ImportCoordinator {
         let pdfURL = libraryRoot.appendingPathComponent(paper.pdfPath)
 
         await resolveMetadata(paperId: paperId, pdfURL: pdfURL, identifiers: identifiers, extractedText: cachedText)
+    }
+
+    func createNote(for paperId: UUID) {
+        guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
+        let paper = papers[index]
+        if let notePath = try? noteGenerator.generateNote(for: paper, libraryRoot: libraryRoot) {
+            papers[index].notePath = notePath
+            papers[index].dateModified = Date()
+            try? indexService.save(papers[index], in: libraryRoot)
+            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        }
     }
 
     func updatePaperMetadata(
