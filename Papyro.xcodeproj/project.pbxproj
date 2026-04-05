@@ -48,6 +48,8 @@
 		2F1EFB32C84C469CBFBDBCCC /* ProjectServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */; };
 		13DF90BD37D14E4DA27E0EED /* ProjectChipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3BFC92E99B4A6BAA4B9B76 /* ProjectChipsView.swift */; };
 		7A786A94B6544D23ACBA0D84 /* ManagedSymlink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9016722AEF674847BD450D34 /* ManagedSymlink.swift */; };
+		FE7D2945AB874478800FB0A3 /* NoteGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EDBA2F4DDB49C4BD4DFB37 /* NoteGenerator.swift */; };
+		84BBD87AA2DA43C18EE585C2 /* NoteGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD36C3C0C1D1432CB71D4C41 /* NoteGeneratorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +106,8 @@
 		F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectServiceTests.swift; sourceTree = "<group>"; };
 		4C3BFC92E99B4A6BAA4B9B76 /* ProjectChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectChipsView.swift; sourceTree = "<group>"; };
 		9016722AEF674847BD450D34 /* ManagedSymlink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedSymlink.swift; sourceTree = "<group>"; };
+		50EDBA2F4DDB49C4BD4DFB37 /* NoteGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteGenerator.swift; sourceTree = "<group>"; };
+		CD36C3C0C1D1432CB71D4C41 /* NoteGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteGeneratorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -165,6 +169,7 @@
 				F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */,
 				94A2E4B393074397B21AB665 /* SymlinkServiceTests.swift */,
 				63E3F95A82BB697D90277F44 /* TextExtractorTests.swift */,
+				CD36C3C0C1D1432CB71D4C41 /* NoteGeneratorTests.swift */,
 			);
 			path = PapyroTests;
 			sourceTree = "<group>";
@@ -185,6 +190,7 @@
 				4394B1F3326147109869AFFB /* SymlinkService.swift */,
 				D27710A85129BE25D8A4FDDF /* TextExtractor.swift */,
 				DBBA0D6387E4919188A5BADF /* TranslationServerProvider.swift */,
+				50EDBA2F4DDB49C4BD4DFB37 /* NoteGenerator.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -307,6 +313,7 @@
 				A12210850766FC9BF3A8C544 /* TextExtractor.swift in Sources */,
 				B2F59B298CD5FD0A04244E4A /* TranslationServerProvider.swift in Sources */,
 				6F129F8EE62A52E1E70D8B4B /* WelcomeView.swift in Sources */,
+				FE7D2945AB874478800FB0A3 /* NoteGenerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -326,6 +333,7 @@
 				2F1EFB32C84C469CBFBDBCCC /* ProjectServiceTests.swift in Sources */,
 				29DA84B1368A41D795D71DD4 /* SymlinkServiceTests.swift in Sources */,
 				7B35EC4AE92E02879A635CE4 /* TextExtractorTests.swift in Sources */,
+				84BBD87AA2DA43C18EE585C2 /* NoteGeneratorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
