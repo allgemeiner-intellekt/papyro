@@ -35,6 +35,11 @@ struct PapyroApp: App {
                 libraryManager.detectExistingLibrary()
             }
         }
+
+        Settings {
+            SettingsView()
+                .environment(appState)
+        }
     }
 
     private func setupImportCoordinator(config: LibraryConfig) {

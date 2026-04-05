@@ -9,6 +9,8 @@ class AppState {
     var isOnboarding: Bool = true
     var isEditingText: Bool = false
     var searchText: String = ""
+    var symlinkHealthIssueCount: Int = 0
+    var showSettingsIntegrations: Bool = false
 
     var visibleColumns: Set<PaperColumn> = PaperColumn.defaultVisible
     var sortColumn: PaperColumn = .dateAdded
