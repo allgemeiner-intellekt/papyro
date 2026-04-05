@@ -29,4 +29,39 @@ struct LibraryConfigTests {
         #expect(decoded.version == 1)
         #expect(decoded.translationServerURL == nil)
     }
+
+    @Test func decodesConfigWithManagedSymlinks() throws {
+        let json = """
+        {
+            "version": 1,
+            "libraryPath": "/tmp/test",
+            "managedSymlinks": [
+                {
+                    "id": "E621E1F8-C36C-495A-93FC-0C247A3E6E5F",
+                    "sourceRelativePath": "notes",
+                    "destinationPath": "/Users/me/Vault/Notes",
+                    "label": "Notes → Vault",
+                    "createdAt": "2026-04-05T12:00:00Z"
+                }
+            ]
+        }
+        """.data(using: .utf8)!
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let config = try decoder.decode(LibraryConfig.self, from: json)
+        #expect(config.managedSymlinks.count == 1)
+        #expect(config.managedSymlinks[0].sourceRelativePath == "notes")
+        #expect(config.managedSymlinks[0].label == "Notes → Vault")
+    }
+
+    @Test func decodesLegacyConfigWithoutManagedSymlinks() throws {
+        let json = """
+        {
+            "version": 1,
+            "libraryPath": "/tmp/test"
+        }
+        """.data(using: .utf8)!
+        let config = try JSONDecoder().decode(LibraryConfig.self, from: json)
+        #expect(config.managedSymlinks.isEmpty)
+    }
 }

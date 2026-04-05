@@ -47,6 +47,7 @@
 		CFD3A612789F4BB5A36F85B6 /* ProjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E2E1CE7ECDA40C5909754EB /* ProjectService.swift */; };
 		2F1EFB32C84C469CBFBDBCCC /* ProjectServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */; };
 		13DF90BD37D14E4DA27E0EED /* ProjectChipsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C3BFC92E99B4A6BAA4B9B76 /* ProjectChipsView.swift */; };
+		7A786A94B6544D23ACBA0D84 /* ManagedSymlink.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9016722AEF674847BD450D34 /* ManagedSymlink.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -102,6 +103,7 @@
 		2E2E1CE7ECDA40C5909754EB /* ProjectService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectService.swift; sourceTree = "<group>"; };
 		F04B6B12FEFB470A8365A14D /* ProjectServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectServiceTests.swift; sourceTree = "<group>"; };
 		4C3BFC92E99B4A6BAA4B9B76 /* ProjectChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectChipsView.swift; sourceTree = "<group>"; };
+		9016722AEF674847BD450D34 /* ManagedSymlink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagedSymlink.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -192,6 +194,7 @@
 			children = (
 				172241C07BD1391037A63260 /* AppState.swift */,
 				54DA00819856E73CE52AF240 /* LibraryConfig.swift */,
+				9016722AEF674847BD450D34 /* ManagedSymlink.swift */,
 				2F4933E4C5E3BD5CA290238F /* Paper.swift */,
 				DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */,
 				5C88D19A2BF84EE3A0ACC199 /* Project.swift */,
@@ -284,6 +287,7 @@
 				77E77352249518E245CCA518 /* ImportCoordinator.swift in Sources */,
 				FB4685DB4F1D81A0540D5C72 /* IndexService.swift in Sources */,
 				16DE6310023701284FA2747D /* LibraryConfig.swift in Sources */,
+				7A786A94B6544D23ACBA0D84 /* ManagedSymlink.swift in Sources */,
 				52DB4C091DF24E52CFF764CC /* LibraryManager.swift in Sources */,
 				A37ADF65685C9E514D5654B1 /* MainView.swift in Sources */,
 				94DFDCA77A8BE173BE1CE4EA /* MetadataProvider.swift in Sources */,
