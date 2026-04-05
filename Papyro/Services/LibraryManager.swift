@@ -5,6 +5,7 @@ import Foundation
 class LibraryManager {
     private let appState: AppState
     private let fileManager = FileManager.default
+    private let symlinkService = ManagedSymlinkService()
 
     private let subdirectories = ["papers", "index", "notes", ".symlinks", ".cache/text", "templates"]
 
@@ -21,10 +22,17 @@ class LibraryManager {
             )
         }
 
+        // Write default note template if it doesn't exist
+        let templateURL = path.appendingPathComponent("templates/note.md")
+        if !fileManager.fileExists(atPath: templateURL.path) {
+            try NoteGenerator.defaultTemplate.write(to: templateURL, atomically: true, encoding: .utf8)
+        }
+
         // Write config.json
         let config = LibraryConfig(version: 1, libraryPath: path.path, translationServerURL: nil)
         let encoder = JSONEncoder()
-        encoder.outputFormatting = .prettyPrinted
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        encoder.dateEncodingStrategy = .iso8601
         let data = try encoder.encode(config)
         try data.write(to: path.appendingPathComponent("config.json"))
 
@@ -43,10 +51,15 @@ class LibraryManager {
     func loadLibrary(from path: URL) throws {
         let configURL = path.appendingPathComponent("config.json")
         let data = try Data(contentsOf: configURL)
-        let config = try JSONDecoder().decode(LibraryConfig.self, from: data)
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let config = try decoder.decode(LibraryConfig.self, from: data)
 
         appState.libraryConfig = config
         appState.isOnboarding = false
+
+        // Check symlink health
+        checkSymlinkHealth(config.managedSymlinks)
     }
 
     @discardableResult
@@ -68,5 +81,10 @@ class LibraryManager {
         } catch {
             return false
         }
+    }
+
+    private func checkSymlinkHealth(_ symlinks: [ManagedSymlink]) {
+        let issues = symlinks.filter { symlinkService.checkHealth($0) != .healthy }
+        appState.symlinkHealthIssueCount = issues.count
     }
 }
