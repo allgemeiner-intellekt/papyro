@@ -17,6 +17,22 @@ struct DetailView: View {
         return coordinator.papers.first { $0.id == id }
     }
 
+    private func noteExistsOnDisk(_ paper: Paper) -> Bool {
+        guard let notePath = paper.notePath,
+              let config = appState.libraryConfig else { return false }
+        let noteURL = URL(fileURLWithPath: config.libraryPath)
+            .appendingPathComponent(notePath)
+        return FileManager.default.fileExists(atPath: noteURL.path)
+    }
+
+    private func openNote(_ paper: Paper) {
+        guard let notePath = paper.notePath,
+              let config = appState.libraryConfig else { return }
+        let noteURL = URL(fileURLWithPath: config.libraryPath)
+            .appendingPathComponent(notePath)
+        NSWorkspace.shared.open(noteURL)
+    }
+
     var body: some View {
         if let paper = paper {
             ScrollView {
@@ -245,6 +261,25 @@ struct DetailView: View {
                     isEditing = true
                 }
                 .buttonStyle(.bordered)
+            }
+
+            // Note actions
+            if noteExistsOnDisk(paper) {
+                Button {
+                    openNote(paper)
+                } label: {
+                    Label("Open Note", systemImage: "doc.text")
+                }
+                .buttonStyle(.bordered)
+                .keyboardShortcut("e", modifiers: .command)
+            } else {
+                Button {
+                    coordinator.createNote(for: paper.id)
+                } label: {
+                    Label("Create Note", systemImage: "doc.badge.plus")
+                }
+                .buttonStyle(.bordered)
+                .tint(.green)
             }
         }
     }
