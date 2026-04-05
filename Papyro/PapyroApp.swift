@@ -35,6 +35,14 @@ struct PapyroApp: App {
                 libraryManager.detectExistingLibrary()
             }
         }
+        .commands {
+            CommandGroup(after: .newItem) {
+                Button("Manage Linked Folders…") {
+                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                }
+                .keyboardShortcut(",", modifiers: [.command, .option])
+            }
+        }
 
         Settings {
             SettingsView()
