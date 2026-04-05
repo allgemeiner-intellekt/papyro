@@ -37,10 +37,10 @@ struct PapyroApp: App {
         }
         .commands {
             CommandGroup(after: .newItem) {
-                Button("Manage Linked Folders…") {
-                    NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                Divider()
+                SettingsLink {
+                    Text("Manage Linked Folders…")
                 }
-                .keyboardShortcut(",", modifiers: [.command, .option])
             }
         }
 
