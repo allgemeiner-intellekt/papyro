@@ -13,6 +13,7 @@ struct SidebarView: View {
     @State private var isProjectsHeaderHovered = false
     @State private var isStatusHeaderHovered = false
     @State private var hoveredStatus: ReadingStatus?
+    @State private var projectToDelete: Project?
     @FocusState private var isNewProjectFieldFocused: Bool
 
     private var projectService: ProjectService {
@@ -45,7 +46,7 @@ struct SidebarView: View {
                                         renamingProjectID = project.id
                                     }
                                     Button("Delete", role: .destructive) {
-                                        coordinator.deleteProject(id: project.id)
+                                        projectToDelete = project
                                     }
                                 }
                         }
@@ -57,7 +58,14 @@ struct SidebarView: View {
                             .focused($isNewProjectFieldFocused)
                             .onSubmit {
                                 if !newProjectName.isEmpty {
-                                    try? projectService.createProject(name: newProjectName)
+                                    do {
+                                        try projectService.createProject(name: newProjectName)
+                                    } catch {
+                                        appState.userError = UserFacingError(
+                                            title: "Couldn't create project",
+                                            message: error.localizedDescription
+                                        )
+                                    }
                                 }
                                 newProjectName = ""
                                 isAddingProject = false
@@ -106,6 +114,21 @@ struct SidebarView: View {
             .collapsible(false)
         }
         .navigationTitle("Papyro")
+        .alert(item: $projectToDelete) { project in
+            Alert(
+                title: Text("Delete Project?"),
+                message: Text("Papers will remain in your library but will be moved to Inbox."),
+                primaryButton: .destructive(Text("Delete")) {
+                    if appState.selectedSidebarItem.projectID == project.id {
+                        appState.selectedSidebarItem = .allPapers
+                    }
+                    coordinator.deleteProject(id: project.id)
+                },
+                secondaryButton: .cancel {
+                    projectToDelete = nil
+                }
+            )
+        }
     }
 
     @ViewBuilder
@@ -123,7 +146,14 @@ struct SidebarView: View {
         .dropDestination(for: String.self) { paperIDStrings, _ in
             for idString in paperIDStrings {
                 if let paperId = UUID(uuidString: idString) {
-                    coordinator.assignPaperToProject(paperId: paperId, project: project)
+                    do {
+                        try coordinator.assignPaperToProject(paperId: paperId, project: project)
+                    } catch {
+                        appState.userError = UserFacingError(
+                            title: "Couldn't assign project",
+                            message: error.localizedDescription
+                        )
+                    }
                 }
             }
             return !paperIDStrings.isEmpty
@@ -216,7 +246,14 @@ struct SidebarView: View {
             .onDisappear { appState.isEditingText = false }
             .onSubmit {
                 if !renameText.isEmpty {
-                    try? projectService.renameProject(id: project.id, newName: renameText)
+                    do {
+                        try projectService.renameProject(id: project.id, newName: renameText)
+                    } catch {
+                        appState.userError = UserFacingError(
+                            title: "Couldn't rename project",
+                            message: error.localizedDescription
+                        )
+                    }
                 }
                 renamingProjectID = nil
             }

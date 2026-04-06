@@ -47,14 +47,34 @@ struct DetailView: View {
                             paper: paper,
                             projects: coordinator.projectService.projects,
                             onRemove: { project in
-                                coordinator.unassignPaperFromProject(paperId: paper.id, project: project)
+                                do {
+                                    try coordinator.unassignPaperFromProject(paperId: paper.id, project: project)
+                                } catch {
+                                    appState.userError = UserFacingError(
+                                        title: "Couldn't unassign project",
+                                        message: error.localizedDescription
+                                    )
+                                }
                             },
                             onAdd: { project in
-                                coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                                do {
+                                    try coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                                } catch {
+                                    appState.userError = UserFacingError(
+                                        title: "Couldn't assign project",
+                                        message: error.localizedDescription
+                                    )
+                                }
                             },
                             onCreateProject: { name in
-                                if let project = try? coordinator.projectService.createProject(name: name) {
-                                    coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                                do {
+                                    let project = try coordinator.projectService.createProject(name: name)
+                                    try coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                                } catch {
+                                    appState.userError = UserFacingError(
+                                        title: "Couldn't create project",
+                                        message: error.localizedDescription
+                                    )
                                 }
                             }
                         )
@@ -72,6 +92,12 @@ struct DetailView: View {
             }
             .onChange(of: appState.selectedPaperId) {
                 isEditing = false
+                editTitle = ""
+                editAuthors = ""
+                editYear = ""
+                editJournal = ""
+                editDOI = ""
+                editAbstract = ""
             }
             .onChange(of: isEditing) {
                 appState.isEditingText = isEditing
@@ -97,7 +123,7 @@ struct DetailView: View {
                     .textFieldStyle(.roundedBorder)
             }
             LabeledContent("Authors") {
-                TextField("Comma-separated authors", text: $editAuthors)
+                TextField("Authors separated by ;", text: $editAuthors)
                     .textFieldStyle(.roundedBorder)
             }
             LabeledContent("Year") {
@@ -121,15 +147,35 @@ struct DetailView: View {
 
             HStack(spacing: 12) {
                 Button("Save") {
+                    let trimmedTitle = editTitle.trimmingCharacters(in: .whitespaces)
+                    if trimmedTitle.isEmpty {
+                        appState.userError = UserFacingError(
+                            title: "Title required",
+                            message: "Please enter a title before saving."
+                        )
+                        return
+                    }
+                    let trimmedYear = editYear.trimmingCharacters(in: .whitespaces)
+                    var parsedYear: Int? = nil
+                    if !trimmedYear.isEmpty {
+                        guard let y = Int(trimmedYear) else {
+                            appState.userError = UserFacingError(
+                                title: "Invalid year",
+                                message: "Year must be a number (e.g. 2024) or empty."
+                            )
+                            return
+                        }
+                        parsedYear = y
+                    }
                     let authors = editAuthors
-                        .components(separatedBy: ",")
+                        .components(separatedBy: ";")
                         .map { $0.trimmingCharacters(in: .whitespaces) }
                         .filter { !$0.isEmpty }
                     coordinator.updatePaperMetadata(
                         paperId: paper.id,
-                        title: editTitle,
+                        title: trimmedTitle,
                         authors: authors,
-                        year: Int(editYear),
+                        year: parsedYear,
                         journal: editJournal.isEmpty ? nil : editJournal,
                         doi: editDOI.isEmpty ? nil : editDOI,
                         abstract: editAbstract.isEmpty ? nil : editAbstract
@@ -155,7 +201,7 @@ struct DetailView: View {
                 .textSelection(.enabled)
 
             if !paper.authors.isEmpty {
-                Text(paper.authors.joined(separator: ", "))
+                Text(paper.authors.joined(separator: "; "))
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .textSelection(.enabled)
@@ -262,7 +308,15 @@ struct DetailView: View {
                         .keyboardShortcut("e", modifiers: .command)
                     } else {
                         Button {
-                            coordinator.createNote(for: paper.id)
+                            switch coordinator.createNote(for: paper.id) {
+                            case .success(let noteURL):
+                                NSWorkspace.shared.open(noteURL)
+                            case .failure(let error):
+                                appState.userError = UserFacingError(
+                                    title: "Couldn't create note",
+                                    message: error.localizedDescription
+                                )
+                            }
                         } label: {
                             Label("Create Note", systemImage: "doc.badge.plus")
                                 .frame(maxWidth: .infinity)
@@ -273,7 +327,7 @@ struct DetailView: View {
 
                     Button {
                         editTitle = paper.title
-                        editAuthors = paper.authors.joined(separator: ", ")
+                        editAuthors = paper.authors.joined(separator: "; ")
                         editYear = paper.year.map(String.init) ?? ""
                         editJournal = paper.journal ?? ""
                         editDOI = paper.doi ?? ""
@@ -305,6 +359,13 @@ struct DetailView: View {
         guard let config = appState.libraryConfig else { return }
         let pdfURL = URL(fileURLWithPath: config.libraryPath)
             .appendingPathComponent(paper.pdfPath)
+        guard FileManager.default.fileExists(atPath: pdfURL.path) else {
+            appState.userError = UserFacingError(
+                title: "PDF Not Found",
+                message: "The file at \(paper.pdfPath) is missing from your library."
+            )
+            return
+        }
         NSWorkspace.shared.open(pdfURL)
     }
 
@@ -312,6 +373,13 @@ struct DetailView: View {
         guard let config = appState.libraryConfig else { return }
         let pdfURL = URL(fileURLWithPath: config.libraryPath)
             .appendingPathComponent(paper.pdfPath)
+        guard FileManager.default.fileExists(atPath: pdfURL.path) else {
+            appState.userError = UserFacingError(
+                title: "PDF Not Found",
+                message: "The file at \(paper.pdfPath) is missing from your library."
+            )
+            return
+        }
         NSWorkspace.shared.activateFileViewerSelecting([pdfURL])
     }
 }

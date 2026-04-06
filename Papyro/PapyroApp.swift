@@ -91,7 +91,8 @@ struct PapyroApp: App {
         let coordinator = ImportCoordinator(
             libraryRoot: libraryRoot,
             metadataProvider: metadataProvider,
-            projectService: projectService
+            projectService: projectService,
+            appState: appState
         )
         coordinator.loadExistingPapers()
         importCoordinator = coordinator

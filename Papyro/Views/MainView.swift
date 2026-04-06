@@ -4,7 +4,6 @@ struct MainView: View {
     @Environment(AppState.self) private var appState
     @Environment(ImportCoordinator.self) private var coordinator
 
-    @State private var showDeleteConfirmation = false
     @State private var showHealthBanner = false
 
     var body: some View {
@@ -23,16 +22,12 @@ struct MainView: View {
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
-        .alert("Delete Project?", isPresented: $showDeleteConfirmation) {
-            Button("Delete", role: .destructive) {
-                if let projectID = appState.selectedSidebarItem.projectID {
-                    coordinator.deleteProject(id: projectID)
-                    appState.selectedSidebarItem = .allPapers
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Papers will remain in your library but will be moved to Inbox.")
+        .alert(item: $appState.userError) { error in
+            Alert(
+                title: Text(error.title),
+                message: Text(error.message),
+                dismissButton: .default(Text("OK"))
+            )
         }
         .onKeyPress("1") {
             setSelectedPaperStatus(.toRead)
@@ -97,12 +92,14 @@ struct MainView: View {
             }
         }
 
-        coordinator.createNote(for: paperId)
-        if let updatedPaper = coordinator.papers.first(where: { $0.id == paperId }),
-           let notePath = updatedPaper.notePath,
-           let config = appState.libraryConfig {
-            let noteURL = URL(fileURLWithPath: config.libraryPath).appendingPathComponent(notePath)
+        switch coordinator.createNote(for: paperId) {
+        case .success(let noteURL):
             NSWorkspace.shared.open(noteURL)
+        case .failure(let error):
+            appState.userError = UserFacingError(
+                title: "Couldn't create note",
+                message: error.localizedDescription
+            )
         }
         return .handled
     }

@@ -14,11 +14,13 @@ class ImportCoordinator {
     private let indexService: IndexService
     let projectService: ProjectService
     private let noteGenerator: NoteGenerator
+    private weak var appState: AppState?
 
     init(
         libraryRoot: URL,
         metadataProvider: MetadataProvider,
         projectService: ProjectService,
+        appState: AppState? = nil,
         fileService: FileService = FileService(),
         textExtractor: TextExtractor = TextExtractor(),
         identifierParser: IdentifierParser = IdentifierParser(),
@@ -28,6 +30,7 @@ class ImportCoordinator {
         self.libraryRoot = libraryRoot
         self.metadataProvider = metadataProvider
         self.projectService = projectService
+        self.appState = appState
         self.fileService = fileService
         self.textExtractor = textExtractor
         self.identifierParser = identifierParser
@@ -71,6 +74,10 @@ class ImportCoordinator {
         do {
             copyResult = try fileService.copyToLibrary(source: sourceURL, libraryRoot: libraryRoot)
         } catch {
+            appState?.userError = UserFacingError(
+                title: "Couldn't import PDF",
+                message: "\(sourceURL.lastPathComponent): \(error.localizedDescription)"
+            )
             return
         }
         let (pdfURL, paperId) = copyResult
@@ -163,16 +170,8 @@ class ImportCoordinator {
             try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
         }
 
-        // Generate note
-        if let finalPaper = papers.first(where: { $0.id == paperId }) {
-            if let notePath = try? noteGenerator.generateNote(for: finalPaper, libraryRoot: libraryRoot) {
-                updatePaper(paperId) { $0.notePath = notePath }
-                if let updated = papers.first(where: { $0.id == paperId }) {
-                    try? indexService.save(updated, in: libraryRoot)
-                    try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
-                }
-            }
-        }
+        // Generate note (best-effort during import — surfacing this is alert spam)
+        _ = createNote(for: paperId)
     }
 
     func retryMetadataLookup(for paperId: UUID) async {
@@ -186,14 +185,22 @@ class ImportCoordinator {
         await resolveMetadata(paperId: paperId, pdfURL: pdfURL, identifiers: identifiers, extractedText: cachedText)
     }
 
-    func createNote(for paperId: UUID) {
-        guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
+    func createNote(for paperId: UUID) -> Result<URL, Error> {
+        guard let index = papers.firstIndex(where: { $0.id == paperId }) else {
+            return .failure(CocoaError(.fileNoSuchFile))
+        }
         let paper = papers[index]
-        if let notePath = try? noteGenerator.generateNote(for: paper, libraryRoot: libraryRoot) {
+        do {
+            let notePath = try noteGenerator.generateNote(for: paper, libraryRoot: libraryRoot)
             papers[index].notePath = notePath
             papers[index].dateModified = Date()
+            // Downstream index writes are best-effort — see plan §6 / Risks.
             try? indexService.save(papers[index], in: libraryRoot)
             try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+            let noteURL = libraryRoot.appendingPathComponent(notePath)
+            return .success(noteURL)
+        } catch {
+            return .failure(error)
         }
     }
 
@@ -250,22 +257,21 @@ class ImportCoordinator {
         }
     }
 
-    func assignPaperToProject(paperId: UUID, project: Project) {
+    func assignPaperToProject(paperId: UUID, project: Project) throws {
         guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
-        if let updated = try? projectService.assignPaper(papers[index], to: project) {
-            papers[index] = updated
-            try? indexService.save(papers[index], in: libraryRoot)
-            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
-        }
+        let updated = try projectService.assignPaper(papers[index], to: project)
+        papers[index] = updated
+        // Downstream index writes are best-effort — see plan §6 / Risks.
+        try? indexService.save(papers[index], in: libraryRoot)
+        try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
     }
 
-    func unassignPaperFromProject(paperId: UUID, project: Project) {
+    func unassignPaperFromProject(paperId: UUID, project: Project) throws {
         guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
-        if let updated = try? projectService.unassignPaper(papers[index], from: project) {
-            papers[index] = updated
-            try? indexService.save(papers[index], in: libraryRoot)
-            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
-        }
+        let updated = try projectService.unassignPaper(papers[index], from: project)
+        papers[index] = updated
+        try? indexService.save(papers[index], in: libraryRoot)
+        try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
     }
 
     func deleteProject(id: UUID) {

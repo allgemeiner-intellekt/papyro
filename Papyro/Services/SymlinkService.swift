@@ -70,10 +70,17 @@ struct SymlinkService: Sendable {
             }
         }
 
-        // Atomically swap: remove old, move temp into place
+        // Atomically swap via rename-rename-remove. Each rename is individually
+        // atomic on macOS; a crash between them leaves a recoverable .symlinks-old/
+        // for next launch's leading cleanup to remove.
+        let oldRoot = libraryRoot.appendingPathComponent(".symlinks-old")
+        if fm.fileExists(atPath: oldRoot.path) {
+            try? fm.removeItem(at: oldRoot)
+        }
         if fm.fileExists(atPath: symlinksRoot.path) {
-            try fm.removeItem(at: symlinksRoot)
+            try fm.moveItem(at: symlinksRoot, to: oldRoot)
         }
         try fm.moveItem(at: tempRoot, to: symlinksRoot)
+        try? fm.removeItem(at: oldRoot)
     }
 }

@@ -142,6 +142,11 @@ struct PaperListView: View {
         .onChange(of: appState.selectedSidebarItem) {
             appState.searchText = ""
         }
+        .onChange(of: coordinator.papers.map(\.id)) { _, ids in
+            if let selected = appState.selectedPaperId, !ids.contains(selected) {
+                appState.selectedPaperId = nil
+            }
+        }
         .dropDestination(for: URL.self) { urls, _ in
             let pdfURLs = urls.filter { $0.pathExtension.lowercased() == "pdf" }
             guard !pdfURLs.isEmpty else { return false }
@@ -164,10 +169,17 @@ struct PaperListView: View {
         Menu("Add to Project") {
             ForEach(coordinator.projectService.userProjects) { project in
                 Button {
-                    if paper.projectIDs.contains(project.id) {
-                        coordinator.unassignPaperFromProject(paperId: paper.id, project: project)
-                    } else {
-                        coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                    do {
+                        if paper.projectIDs.contains(project.id) {
+                            try coordinator.unassignPaperFromProject(paperId: paper.id, project: project)
+                        } else {
+                            try coordinator.assignPaperToProject(paperId: paper.id, project: project)
+                        }
+                    } catch {
+                        appState.userError = UserFacingError(
+                            title: "Couldn't update project",
+                            message: error.localizedDescription
+                        )
                     }
                 } label: {
                     HStack {

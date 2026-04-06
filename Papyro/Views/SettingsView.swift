@@ -75,7 +75,14 @@ private struct IntegrationsSettingsTab: View {
                 }
                 Spacer()
                 Button {
-                    try? coordinator.projectService.rebuildSymlinks(papers: coordinator.papers)
+                    do {
+                        try coordinator.projectService.rebuildSymlinks(papers: coordinator.papers)
+                    } catch {
+                        appState.userError = UserFacingError(
+                            title: "Couldn't rebuild symlinks",
+                            message: error.localizedDescription
+                        )
+                    }
                 } label: {
                     Label("Rebuild", systemImage: "arrow.triangle.2.circlepath")
                 }
@@ -209,21 +216,35 @@ private struct IntegrationsSettingsTab: View {
 
     private func createLink(sourceRelativePath: String, destinationPath: String) {
         guard let libRoot = libraryRoot else { return }
-        guard let symlink = try? symlinkService.createLink(
-            sourceRelativePath: sourceRelativePath,
-            destinationPath: destinationPath,
-            libraryRoot: libRoot
-        ) else { return }
-        appState.libraryConfig?.managedSymlinks.append(symlink)
-        saveConfig()
-        refreshSymlinks()
+        do {
+            let symlink = try symlinkService.createLink(
+                sourceRelativePath: sourceRelativePath,
+                destinationPath: destinationPath,
+                libraryRoot: libRoot
+            )
+            appState.libraryConfig?.managedSymlinks.append(symlink)
+            try saveConfig()
+            refreshSymlinks()
+        } catch {
+            appState.userError = UserFacingError(
+                title: "Couldn't link folder",
+                message: error.localizedDescription
+            )
+        }
     }
 
     private func unlinkFolder(_ symlink: ManagedSymlink) {
-        try? symlinkService.removeLink(symlink)
-        appState.libraryConfig?.managedSymlinks.removeAll { $0.id == symlink.id }
-        saveConfig()
-        refreshSymlinks()
+        do {
+            try symlinkService.removeLink(symlink)
+            appState.libraryConfig?.managedSymlinks.removeAll { $0.id == symlink.id }
+            try saveConfig()
+            refreshSymlinks()
+        } catch {
+            appState.userError = UserFacingError(
+                title: "Couldn't unlink folder",
+                message: error.localizedDescription
+            )
+        }
         symlinkToUnlink = nil
     }
 
@@ -238,24 +259,29 @@ private struct IntegrationsSettingsTab: View {
         guard panel.runModal() == .OK, let newURL = panel.url else { return }
         let newDestPath = newURL.appendingPathComponent(URL(fileURLWithPath: symlink.destinationPath).lastPathComponent).path
 
-        guard let repaired = try? symlinkService.repairLink(symlink, newDestinationPath: newDestPath, libraryRoot: libRoot) else { return }
-
-        if let index = appState.libraryConfig?.managedSymlinks.firstIndex(where: { $0.id == symlink.id }) {
-            appState.libraryConfig?.managedSymlinks[index] = repaired
+        do {
+            let repaired = try symlinkService.repairLink(symlink, newDestinationPath: newDestPath, libraryRoot: libRoot)
+            if let index = appState.libraryConfig?.managedSymlinks.firstIndex(where: { $0.id == symlink.id }) {
+                appState.libraryConfig?.managedSymlinks[index] = repaired
+            }
+            try saveConfig()
+            refreshSymlinks()
+        } catch {
+            appState.userError = UserFacingError(
+                title: "Couldn't repair link",
+                message: error.localizedDescription
+            )
         }
-        saveConfig()
-        refreshSymlinks()
     }
 
-    private func saveConfig() {
+    private func saveConfig() throws {
         guard let config = appState.libraryConfig else { return }
         let configURL = URL(fileURLWithPath: config.libraryPath).appendingPathComponent("config.json")
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         encoder.dateEncodingStrategy = .iso8601
-        if let data = try? encoder.encode(config) {
-            try? data.write(to: configURL, options: .atomic)
-        }
+        let data = try encoder.encode(config)
+        try data.write(to: configURL, options: .atomic)
     }
 }
 
