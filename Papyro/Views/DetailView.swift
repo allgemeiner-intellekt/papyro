@@ -286,6 +286,7 @@ struct DetailView: View {
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
+                    .keyboardShortcut("o", modifiers: .command)
 
                     Button {
                         revealInFinder(paper)
