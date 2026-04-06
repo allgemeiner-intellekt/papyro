@@ -4,6 +4,7 @@ struct PaperListView: View {
     @Environment(AppState.self) private var appState
     @Environment(ImportCoordinator.self) private var coordinator
     @FocusState private var isSearchFocused: Bool
+    @State private var paperPendingDelete: Paper?
 
     private var filteredPapers: [Paper] {
         var result = coordinator.papers
@@ -153,6 +154,32 @@ struct PaperListView: View {
             Task { await coordinator.importPDFs(pdfURLs) }
             return true
         }
+        .onKeyPress(.delete, phases: .down) { press in
+            guard press.modifiers == .command else { return .ignored }
+            guard !appState.isEditingText else { return .ignored }
+            guard let id = appState.selectedPaperId,
+                  let paper = coordinator.papers.first(where: { $0.id == id })
+            else { return .ignored }
+            paperPendingDelete = paper
+            return .handled
+        }
+        .confirmationDialog(
+            "Move to Trash?",
+            isPresented: Binding(
+                get: { paperPendingDelete != nil },
+                set: { if !$0 { paperPendingDelete = nil } }
+            ),
+            presenting: paperPendingDelete
+        ) { paper in
+            Button("Move to Trash", role: .destructive) {
+                deletePaperToTrash(paper)
+            }
+            Button("Cancel", role: .cancel) {
+                paperPendingDelete = nil
+            }
+        } message: { paper in
+            Text("\"\(paper.title)\" will be moved to the Trash. The note file in notes/ will be left alone.")
+        }
     }
 
     private var navigationTitle: String {
@@ -162,6 +189,25 @@ struct PaperListView: View {
         case .project(let id):
             coordinator.projectService.projects.first { $0.id == id }?.name ?? "Papers"
         }
+    }
+
+    private func deletePaperToTrash(_ paper: Paper) {
+        guard let config = appState.libraryConfig else { return }
+        let pdfURL = URL(fileURLWithPath: config.libraryPath)
+            .appendingPathComponent(paper.pdfPath)
+        if FileManager.default.fileExists(atPath: pdfURL.path) {
+            do {
+                try FileManager.default.trashItem(at: pdfURL, resultingItemURL: nil)
+            } catch {
+                appState.userError = UserFacingError(
+                    title: "Couldn't move to Trash",
+                    message: error.localizedDescription
+                )
+                return
+            }
+        }
+        coordinator.deletePaper(paperId: paper.id)
+        paperPendingDelete = nil
     }
 
     @ViewBuilder
