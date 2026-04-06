@@ -5,6 +5,11 @@ import Foundation
 @MainActor
 class ImportCoordinator {
     private(set) var papers: [Paper] = []
+    private(set) var isResolvingPending: Bool = false
+
+    var pendingPapers: [Paper] {
+        papers.filter { $0.importState == .unresolved }
+    }
 
     private let libraryRoot: URL
     private let fileService: FileService
@@ -183,6 +188,57 @@ class ImportCoordinator {
         let pdfURL = libraryRoot.appendingPathComponent(paper.pdfPath)
 
         await resolveMetadata(paperId: paperId, pdfURL: pdfURL, identifiers: identifiers, extractedText: cachedText)
+    }
+
+    /// Drains every paper currently marked .unresolved through the same
+    /// pipeline as a manual retry. Capped at 3 concurrent fetches.
+    /// On per-item failure, the paper stays .unresolved and lastResolutionError
+    /// is updated. The drain continues regardless of individual failures.
+    func resolveAllPending() async {
+        guard !isResolvingPending else { return }
+        let toResolve = pendingPapers.map(\.id)
+        guard !toResolve.isEmpty else { return }
+        isResolvingPending = true
+        defer { isResolvingPending = false }
+
+        await withTaskGroup(of: Void.self) { group in
+            var iterator = toResolve.makeIterator()
+
+            func addNext() {
+                guard let id = iterator.next() else { return }
+                group.addTask { [weak self] in
+                    await self?.resolveOnePending(paperId: id)
+                }
+            }
+
+            // Prime up to 3 concurrent
+            for _ in 0..<min(3, toResolve.count) { addNext() }
+
+            for await _ in group {
+                addNext()
+            }
+        }
+    }
+
+    private func resolveOnePending(paperId: UUID) async {
+        let beforeState = papers.first(where: { $0.id == paperId })?.importState
+        await retryMetadataLookup(for: paperId)
+        guard let after = papers.first(where: { $0.id == paperId }) else { return }
+
+        if after.importState == .unresolved && beforeState == .unresolved {
+            // Retry didn't move it forward — record an error string.
+            updatePaper(paperId) { p in
+                p.lastResolutionError = "Metadata lookup failed"
+            }
+            if let p = papers.first(where: { $0.id == paperId }) {
+                try? indexService.save(p, in: libraryRoot)
+            }
+        } else if after.importState == .resolved {
+            updatePaper(paperId) { p in p.lastResolutionError = nil }
+            if let p = papers.first(where: { $0.id == paperId }) {
+                try? indexService.save(p, in: libraryRoot)
+            }
+        }
     }
 
     func createNote(for paperId: UUID) -> Result<URL, Error> {
