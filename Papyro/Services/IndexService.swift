@@ -44,4 +44,18 @@ struct IndexService: Sendable {
         let data = try encoder.encode(papers)
         try data.write(to: allJsonURL, options: .atomic)
     }
+
+    func delete(_ paper: Paper, in libraryRoot: URL) throws {
+        let fileURL = libraryRoot
+            .appendingPathComponent("index")
+            .appendingPathComponent("\(paper.id.uuidString).json")
+        if FileManager.default.fileExists(atPath: fileURL.path) {
+            try FileManager.default.removeItem(at: fileURL)
+        }
+    }
+
+    func loadOne(at url: URL) throws -> Paper? {
+        guard let data = try? Data(contentsOf: url) else { return nil }
+        return try? decoder.decode(Paper.self, from: data)
+    }
 }

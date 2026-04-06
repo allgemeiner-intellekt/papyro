@@ -105,4 +105,50 @@ struct IndexServiceTests {
         #expect(papers.count == 1)
         #expect(papers[0].title == "Updated Title")
     }
+
+    @Test func deletesPaper() throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let paper = makePaper()
+        try indexService.save(paper, in: libRoot)
+        let fileURL = libRoot.appendingPathComponent("index/\(paper.id.uuidString).json")
+        #expect(FileManager.default.fileExists(atPath: fileURL.path))
+
+        try indexService.delete(paper, in: libRoot)
+        #expect(!FileManager.default.fileExists(atPath: fileURL.path))
+    }
+
+    @Test func deleteIsIdempotent() throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let paper = makePaper()
+        // Never saved — delete should not throw.
+        try indexService.delete(paper, in: libRoot)
+    }
+
+    @Test func loadOneReturnsPaper() throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let paper = makePaper(title: "Single Load")
+        try indexService.save(paper, in: libRoot)
+        let url = libRoot.appendingPathComponent("index/\(paper.id.uuidString).json")
+
+        let loaded = try indexService.loadOne(at: url)
+        #expect(loaded?.id == paper.id)
+        #expect(loaded?.title == "Single Load")
+    }
+
+    @Test func loadOneReturnsNilForCorruptJSON() throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let url = libRoot.appendingPathComponent("index/corrupt.json")
+        try "{ not valid json".write(to: url, atomically: true, encoding: .utf8)
+
+        let loaded = try indexService.loadOne(at: url)
+        #expect(loaded == nil)
+    }
 }
