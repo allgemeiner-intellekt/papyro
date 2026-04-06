@@ -3,6 +3,56 @@ import Foundation
 @testable import Papyro
 
 struct PaperTests {
+    @Test func decodesPaperWithoutLastResolutionError() throws {
+        // Pre-M6 JSON has no lastResolutionError field — must still decode.
+        let json = """
+        {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "title": "Test",
+          "authors": ["Smith, J."],
+          "pdfPath": "papers/test.pdf",
+          "pdfFilename": "test.pdf",
+          "projectIDs": [],
+          "status": "toRead",
+          "dateAdded": "2026-04-01T00:00:00Z",
+          "dateModified": "2026-04-01T00:00:00Z",
+          "metadataSource": "none",
+          "metadataResolved": false,
+          "importState": "unresolved"
+        }
+        """.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let paper = try decoder.decode(Paper.self, from: json)
+        #expect(paper.lastResolutionError == nil)
+    }
+
+    @Test func decodesPaperWithLastResolutionError() throws {
+        let json = """
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "title": "Test",
+          "authors": [],
+          "pdfPath": "papers/test.pdf",
+          "pdfFilename": "test.pdf",
+          "projectIDs": [],
+          "status": "toRead",
+          "dateAdded": "2026-04-01T00:00:00Z",
+          "dateModified": "2026-04-01T00:00:00Z",
+          "metadataSource": "none",
+          "metadataResolved": false,
+          "importState": "unresolved",
+          "lastResolutionError": "network unreachable"
+        }
+        """.data(using: .utf8)!
+
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
+        let paper = try decoder.decode(Paper.self, from: json)
+        #expect(paper.lastResolutionError == "network unreachable")
+    }
+
     @Test func encodesAndDecodesCorrectly() throws {
         let paper = Paper(
             id: UUID(uuidString: "12345678-1234-1234-1234-123456789abc")!,

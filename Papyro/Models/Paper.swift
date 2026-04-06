@@ -27,6 +27,7 @@ struct Paper: Codable, Identifiable, Sendable {
     var metadataSource: MetadataSource
     var metadataResolved: Bool
     var importState: ImportState
+    var lastResolutionError: String?
 }
 
 // Backward-compatible decoder for pre-M3 paper JSON (had "topics"/"projects" instead of "projectIDs")
@@ -55,6 +56,7 @@ extension Paper {
         metadataSource = try container.decode(MetadataSource.self, forKey: .metadataSource)
         metadataResolved = try container.decode(Bool.self, forKey: .metadataResolved)
         importState = try container.decode(ImportState.self, forKey: .importState)
+        lastResolutionError = try container.decodeIfPresent(String.self, forKey: .lastResolutionError)
     }
 }
 
