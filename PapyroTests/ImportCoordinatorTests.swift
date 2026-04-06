@@ -270,4 +270,58 @@ struct ImportCoordinatorTests {
         #expect(paper.metadataSource == .manual)
         #expect(paper.importState == .resolved)
     }
+
+    @Test @MainActor func deletePaperRemovesFromMemoryAndIndex() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
+        let coordinator = await ImportCoordinator(
+            libraryRoot: libRoot,
+            metadataProvider: FallbackMetadataProvider(providers: []),
+            projectService: projectService
+        )
+
+        // Seed: a paper directly via index, then load.
+        let paper = Paper(
+            id: UUID(),
+            canonicalId: nil,
+            title: "Doomed",
+            authors: [],
+            year: nil, journal: nil, doi: nil, arxivId: nil, pmid: nil, isbn: nil,
+            abstract: nil, url: nil,
+            pdfPath: "papers/doomed.pdf",
+            pdfFilename: "doomed.pdf",
+            notePath: nil,
+            projectIDs: [],
+            status: .toRead,
+            dateAdded: Date(),
+            dateModified: Date(),
+            metadataSource: .none,
+            metadataResolved: false,
+            importState: .unresolved
+        )
+        try IndexService().save(paper, in: libRoot)
+        coordinator.loadExistingPapers()
+        #expect(coordinator.papers.contains(where: { $0.id == paper.id }))
+
+        coordinator.deletePaper(paperId: paper.id)
+
+        #expect(!coordinator.papers.contains(where: { $0.id == paper.id }))
+        let indexFile = libRoot.appendingPathComponent("index/\(paper.id.uuidString).json")
+        #expect(!FileManager.default.fileExists(atPath: indexFile.path))
+    }
+
+    @Test @MainActor func deletePaperIsNoOpForUnknownId() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
+        let coordinator = await ImportCoordinator(
+            libraryRoot: libRoot,
+            metadataProvider: FallbackMetadataProvider(providers: []),
+            projectService: projectService
+        )
+
+        coordinator.deletePaper(paperId: UUID())  // must not crash
+        #expect(coordinator.papers.isEmpty)
+    }
 }

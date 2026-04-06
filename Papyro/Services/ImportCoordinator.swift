@@ -257,6 +257,17 @@ class ImportCoordinator {
         }
     }
 
+    func deletePaper(paperId: UUID) {
+        guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
+        let paper = papers[index]
+        papers.remove(at: index)
+        try? indexService.delete(paper, in: libraryRoot)
+        try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        if appState?.selectedPaperId == paperId {
+            appState?.selectedPaperId = nil
+        }
+    }
+
     func assignPaperToProject(paperId: UUID, project: Project) throws {
         guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
         let updated = try projectService.assignPaper(papers[index], to: project)
