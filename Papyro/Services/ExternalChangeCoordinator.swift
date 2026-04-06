@@ -96,6 +96,26 @@ final class ExternalChangeCoordinator {
         importer.deletePaper(paperId: paper.id)
     }
 
+    func handleIndexModified(url: URL) async {
+        if consumeGuard(for: url) { return }
+        guard let importer = importCoordinator else { return }
+
+        do {
+            guard let updated = try indexService.loadOne(at: url) else {
+                // Corrupt JSON or unreadable — leave in-memory authoritative.
+                return
+            }
+            if importer.papers.contains(where: { $0.id == updated.id }) {
+                importer.replaceFromExternalSync(updated)
+            } else {
+                importer.addPaperFromExternalSync(updated)
+            }
+        } catch {
+            // Corrupt JSON or unreadable — leave in-memory authoritative.
+            return
+        }
+    }
+
     private func relativePath(of url: URL) -> String {
         let rootPath = libraryRoot.path.hasSuffix("/") ? libraryRoot.path : libraryRoot.path + "/"
         if url.path.hasPrefix(rootPath) {

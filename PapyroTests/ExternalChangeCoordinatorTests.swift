@@ -126,4 +126,48 @@ struct ExternalChangeCoordinatorTests {
 
         #expect(importer.papers.count == 1)
     }
+
+    @Test @MainActor func handleIndexModifiedReplacesPaper() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let importer = makeCoordinator(libraryRoot: libRoot)
+        let ext = ExternalChangeCoordinator(libraryRoot: libRoot, importCoordinator: importer)
+
+        // Seed via the existing add path
+        let pdfURL = libRoot.appendingPathComponent("papers/seeded.pdf")
+        FileManager.default.createFile(atPath: pdfURL.path, contents: Data())
+        await ext.handlePDFAdded(url: pdfURL)
+        let originalId = importer.papers[0].id
+
+        // Externally rewrite the index file with a new title
+        var updated = importer.papers[0]
+        updated.title = "Edited Externally"
+        try IndexService().save(updated, in: libRoot)
+        let indexURL = libRoot.appendingPathComponent("index/\(originalId.uuidString).json")
+
+        await ext.handleIndexModified(url: indexURL)
+
+        #expect(importer.papers.first?.title == "Edited Externally")
+    }
+
+    @Test @MainActor func handleIndexModifiedIgnoresCorruptJSON() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let importer = makeCoordinator(libraryRoot: libRoot)
+        let ext = ExternalChangeCoordinator(libraryRoot: libRoot, importCoordinator: importer)
+
+        let pdfURL = libRoot.appendingPathComponent("papers/keep.pdf")
+        FileManager.default.createFile(atPath: pdfURL.path, contents: Data())
+        await ext.handlePDFAdded(url: pdfURL)
+        let originalTitle = importer.papers[0].title
+        let originalId = importer.papers[0].id
+
+        let indexURL = libRoot.appendingPathComponent("index/\(originalId.uuidString).json")
+        try "{ broken".write(to: indexURL, atomically: true, encoding: .utf8)
+
+        await ext.handleIndexModified(url: indexURL)
+
+        // In-memory copy must remain authoritative
+        #expect(importer.papers.first?.title == originalTitle)
+    }
 }

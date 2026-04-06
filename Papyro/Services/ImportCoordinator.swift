@@ -390,4 +390,12 @@ class ImportCoordinator {
         if papers.contains(where: { $0.pdfPath == paper.pdfPath }) { return }
         papers.append(paper)
     }
+
+    /// Replace a Paper in place when the external-sync layer reports an
+    /// updated index file. No-op if the id is unknown — caller is responsible
+    /// for choosing between this and addPaperFromExternalSync.
+    func replaceFromExternalSync(_ paper: Paper) {
+        guard let index = papers.firstIndex(where: { $0.id == paper.id }) else { return }
+        papers[index] = paper
+    }
 }
