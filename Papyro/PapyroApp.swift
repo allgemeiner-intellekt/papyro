@@ -5,6 +5,8 @@ struct PapyroApp: App {
     @State private var appState: AppState
     @State private var libraryManager: LibraryManager
     @State private var importCoordinator: ImportCoordinator?
+    @State private var externalCoordinator: ExternalChangeCoordinator?
+    @State private var fileWatcher: FileSystemWatcher?
 
     init() {
         let state = AppState()
@@ -58,7 +60,8 @@ struct PapyroApp: App {
     }
 
     private func setupImportCoordinator(config: LibraryConfig) {
-        let libraryRoot = URL(fileURLWithPath: config.libraryPath)
+        // Resolve symlinks once so FSEvents paths and our prefix-stripping agree.
+        let libraryRoot = URL(fileURLWithPath: config.libraryPath).resolvingSymlinksInPath()
 
         // Load column preferences from config
         if let columns = config.visibleColumns {
@@ -96,5 +99,51 @@ struct PapyroApp: App {
         )
         coordinator.loadExistingPapers()
         importCoordinator = coordinator
+
+        // --- M6 external sync wiring ---
+        let extCoord = ExternalChangeCoordinator(
+            libraryRoot: libraryRoot,
+            importCoordinator: coordinator
+        )
+        coordinator.externalChangeCoordinator = extCoord
+        externalCoordinator = extCoord
+
+        let watcher = FileSystemWatcher(
+            directories: [
+                libraryRoot.appendingPathComponent("papers"),
+                libraryRoot.appendingPathComponent("index")
+            ]
+        ) { [weak appState] event in
+            Task { @MainActor in
+                switch event {
+                case .pdfAdded(let url):
+                    await extCoord.handlePDFAdded(url: url)
+                case .pdfRemoved(let url):
+                    await extCoord.handlePDFRemoved(url: url)
+                case .indexModified(let url):
+                    await extCoord.handleIndexModified(url: url)
+                case .rootChanged:
+                    appState?.userError = UserFacingError(
+                        title: "Library folder moved",
+                        message: "Papyro lost track of your library. Restart and choose it again from Settings."
+                    )
+                }
+            }
+        }
+        if !watcher.start() {
+            appState.userError = UserFacingError(
+                title: "Live sync unavailable",
+                message: "Papyro couldn't start filesystem monitoring. External changes will only be picked up when you relaunch."
+            )
+        }
+        fileWatcher = watcher
+
+        // Reconcile + initial drain (fire-and-forget; runs after this function returns on MainActor)
+        Task { @MainActor in
+            await extCoord.reconcile()
+            if !coordinator.pendingPapers.isEmpty {
+                await coordinator.resolveAllPending()
+            }
+        }
     }
 }

@@ -20,6 +20,7 @@ class ImportCoordinator {
     let projectService: ProjectService
     private let noteGenerator: NoteGenerator
     private weak var appState: AppState?
+    weak var externalChangeCoordinator: ExternalChangeCoordinator?
 
     init(
         libraryRoot: URL,
