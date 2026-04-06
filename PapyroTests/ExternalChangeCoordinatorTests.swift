@@ -90,6 +90,23 @@ struct ExternalChangeCoordinatorTests {
         #expect(importer.papers.isEmpty)
     }
 
+    @Test @MainActor func handlePDFAddedCreatesSymlinkInInbox() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let importer = makeCoordinator(libraryRoot: libRoot)
+        let ext = ExternalChangeCoordinator(libraryRoot: libRoot, importCoordinator: importer)
+
+        let pdfURL = libRoot.appendingPathComponent("papers/with-symlink.pdf")
+        FileManager.default.createFile(atPath: pdfURL.path, contents: Data())
+
+        await ext.handlePDFAdded(url: pdfURL)
+
+        let inboxSlug = importer.projectService.inbox.slug
+        let symlinkURL = libRoot
+            .appendingPathComponent(".symlinks/\(inboxSlug)/with-symlink.pdf")
+        #expect(FileManager.default.fileExists(atPath: symlinkURL.path))
+    }
+
     @Test @MainActor func selfWriteGuardExpiresAfterTTL() async throws {
         let libRoot = try makeTempLibrary()
         defer { try? FileManager.default.removeItem(at: libRoot) }

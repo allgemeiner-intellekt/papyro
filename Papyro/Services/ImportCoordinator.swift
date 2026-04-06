@@ -382,10 +382,12 @@ class ImportCoordinator {
         transform(&papers[index])
     }
 
-    /// Called by ExternalChangeCoordinator to insert a paper discovered via
-    /// filesystem watch. Bypasses the full import pipeline — paper arrives
-    /// with importState = .unresolved for later user-driven resolution.
+    /// Append a Paper produced by the external-sync layer (FileSystemWatcher).
+    /// Idempotent: if a paper with the same `pdfPath` is already present, this
+    /// is a no-op. Callers (ExternalChangeCoordinator, future reconcile) can
+    /// safely re-invoke without producing duplicates.
     func addPaperFromExternalSync(_ paper: Paper) {
+        if papers.contains(where: { $0.pdfPath == paper.pdfPath }) { return }
         papers.append(paper)
     }
 }

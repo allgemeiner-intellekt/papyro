@@ -55,7 +55,7 @@ final class ExternalChangeCoordinator {
             return  // idempotent
         }
 
-        let paper = Paper(
+        var paper = Paper(
             id: UUID(),
             canonicalId: nil,
             title: url.deletingPathExtension().lastPathComponent,
@@ -65,7 +65,7 @@ final class ExternalChangeCoordinator {
             pdfPath: relPath,
             pdfFilename: url.lastPathComponent,
             notePath: nil,
-            projectIDs: [importer.projectService.inbox.id],
+            projectIDs: [],
             status: .toRead,
             dateAdded: Date(),
             dateModified: Date(),
@@ -74,6 +74,13 @@ final class ExternalChangeCoordinator {
             importState: .unresolved,
             lastResolutionError: nil
         )
+
+        // Route Inbox assignment through ProjectService so the symlink in
+        // .symlinks/inbox/ is created. Direct projectIDs injection would set the
+        // paper-side state but skip the symlink layer (see ProjectService.assignPaper).
+        if let assigned = try? importer.projectService.assignPaper(paper, to: importer.projectService.inbox) {
+            paper = assigned
+        }
 
         importer.addPaperFromExternalSync(paper)
         try? indexService.save(paper, in: libraryRoot)
