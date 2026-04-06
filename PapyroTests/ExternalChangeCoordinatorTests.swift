@@ -170,4 +170,53 @@ struct ExternalChangeCoordinatorTests {
         // In-memory copy must remain authoritative
         #expect(importer.papers.first?.title == originalTitle)
     }
+
+    @Test @MainActor func reconcileAddsOrphanPDFs() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let importer = makeCoordinator(libraryRoot: libRoot)
+        let ext = ExternalChangeCoordinator(libraryRoot: libRoot, importCoordinator: importer)
+
+        // PDF on disk, no index entry
+        let pdfURL = libRoot.appendingPathComponent("papers/orphan.pdf")
+        FileManager.default.createFile(atPath: pdfURL.path, contents: Data())
+
+        await ext.reconcile()
+
+        #expect(importer.papers.contains { $0.pdfFilename == "orphan.pdf" })
+    }
+
+    @Test @MainActor func reconcileRemovesGhostIndexEntries() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let importer = makeCoordinator(libraryRoot: libRoot)
+        let ext = ExternalChangeCoordinator(libraryRoot: libRoot, importCoordinator: importer)
+
+        // Seed via add, then delete file underneath
+        let pdfURL = libRoot.appendingPathComponent("papers/ghost.pdf")
+        FileManager.default.createFile(atPath: pdfURL.path, contents: Data())
+        await ext.handlePDFAdded(url: pdfURL)
+        try FileManager.default.removeItem(at: pdfURL)
+
+        await ext.reconcile()
+
+        #expect(importer.papers.isEmpty)
+    }
+
+    @Test @MainActor func reconcileFindsNestedYearDirectories() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+        let importer = makeCoordinator(libraryRoot: libRoot)
+        let ext = ExternalChangeCoordinator(libraryRoot: libRoot, importCoordinator: importer)
+
+        // PDFs nested under a year folder should still be discovered.
+        let yearDir = libRoot.appendingPathComponent("papers/2024")
+        try FileManager.default.createDirectory(at: yearDir, withIntermediateDirectories: true)
+        let pdfURL = yearDir.appendingPathComponent("nested.pdf")
+        FileManager.default.createFile(atPath: pdfURL.path, contents: Data())
+
+        await ext.reconcile()
+
+        #expect(importer.papers.contains { $0.pdfFilename == "nested.pdf" })
+    }
 }

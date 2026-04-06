@@ -116,6 +116,55 @@ final class ExternalChangeCoordinator {
         }
     }
 
+    // MARK: - Reconciliation
+
+    /// Walks papers/ and the in-memory index, syncing them. Called once at
+    /// launch (and after the watcher reports rootChanged recovery).
+    func reconcile() async {
+        guard let importer = importCoordinator else { return }
+
+        // Discover every PDF under papers/, recursively.
+        // FileManager enumeration is synchronous, so we collect them first.
+        let foundPDFs = findAllPDFs()
+
+        let foundRelPaths = Set(foundPDFs.map { relativePath(of: $0) })
+        let knownRelPaths = Set(importer.papers.map(\.pdfPath))
+
+        // Add orphan PDFs (on disk, not in index)
+        for url in foundPDFs where !knownRelPaths.contains(relativePath(of: url)) {
+            await handlePDFAdded(url: url)
+        }
+
+        // Remove ghost entries (in index, not on disk)
+        let papersToCheck = importer.papers
+        for paper in papersToCheck where !foundRelPaths.contains(paper.pdfPath) {
+            let url = libraryRoot.appendingPathComponent(paper.pdfPath)
+            await handlePDFRemoved(url: url)
+        }
+    }
+
+    /// Helper to recursively find all PDF files under papers/.
+    /// Synchronous because FileManager enumeration is synchronous.
+    private func findAllPDFs() -> [URL] {
+        let papersRoot = libraryRoot.appendingPathComponent("papers")
+        let fm = FileManager.default
+        var foundPDFs: [URL] = []
+
+        if let enumerator = fm.enumerator(
+            at: papersRoot,
+            includingPropertiesForKeys: [.isRegularFileKey],
+            options: [.skipsHiddenFiles]
+        ) {
+            for case let url as URL in enumerator {
+                if url.pathExtension.lowercased() == "pdf" {
+                    foundPDFs.append(url)
+                }
+            }
+        }
+
+        return foundPDFs
+    }
+
     private func relativePath(of url: URL) -> String {
         let rootPath = libraryRoot.path.hasSuffix("/") ? libraryRoot.path : libraryRoot.path + "/"
         if url.path.hasPrefix(rootPath) {
