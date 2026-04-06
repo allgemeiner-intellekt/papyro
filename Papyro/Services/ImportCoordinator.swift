@@ -61,7 +61,7 @@ class ImportCoordinator {
         for i in papers.indices {
             if papers[i].projectIDs.isEmpty {
                 papers[i].projectIDs = [inboxID]
-                try? indexService.save(papers[i], in: libraryRoot)
+                guardedSave(papers[i])
             }
         }
     }
@@ -158,6 +158,11 @@ class ImportCoordinator {
             let firstAuthor = metadata.authors.first.flatMap { $0.components(separatedBy: ",").first }
             let newFilename = fileService.generateFilename(year: metadata.year, author: firstAuthor, title: metadata.title)
 
+            // Both the source and destination of the rename will fire FSEvents.
+            externalChangeCoordinator?.willWrite(at: pdfURL)
+            externalChangeCoordinator?.willWrite(
+                at: pdfURL.deletingLastPathComponent().appendingPathComponent(newFilename))
+
             if let newURL = try? fileService.renamePDF(from: pdfURL, to: newFilename) {
                 updatePaper(paperId) { p in
                     p.pdfPath = "papers/\(newURL.lastPathComponent)"
@@ -172,8 +177,8 @@ class ImportCoordinator {
         }
 
         if let finalPaper = papers.first(where: { $0.id == paperId }) {
-            try? indexService.save(finalPaper, in: libraryRoot)
-            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+            guardedSave(finalPaper)
+            guardedRebuildCombined()
         }
 
         // Generate note (best-effort during import — surfacing this is alert spam)
@@ -235,14 +240,14 @@ class ImportCoordinator {
                 p.lastResolutionError = "Metadata lookup failed"
             }
             if let p = papers.first(where: { $0.id == paperId }) {
-                try? indexService.save(p, in: libraryRoot)
+                guardedSave(p)
             }
         } else if after.importState == .resolved {
             // Second save is intentional: retryMetadataLookup already persisted the
             // resolved paper, but clearing lastResolutionError happens after its return.
             updatePaper(paperId) { p in p.lastResolutionError = nil }
             if let p = papers.first(where: { $0.id == paperId }) {
-                try? indexService.save(p, in: libraryRoot)
+                guardedSave(p)
             }
         }
     }
@@ -257,8 +262,8 @@ class ImportCoordinator {
             papers[index].notePath = notePath
             papers[index].dateModified = Date()
             // Downstream index writes are best-effort — see plan §6 / Risks.
-            try? indexService.save(papers[index], in: libraryRoot)
-            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+            guardedSave(papers[index])
+            guardedRebuildCombined()
             let noteURL = libraryRoot.appendingPathComponent(notePath)
             return .success(noteURL)
         } catch {
@@ -303,8 +308,8 @@ class ImportCoordinator {
         }
 
         if let finalPaper = papers.first(where: { $0.id == paperId }) {
-            try? indexService.save(finalPaper, in: libraryRoot)
-            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+            guardedSave(finalPaper)
+            guardedRebuildCombined()
         }
     }
 
@@ -314,17 +319,20 @@ class ImportCoordinator {
             p.dateModified = Date()
         }
         if let paper = papers.first(where: { $0.id == paperId }) {
-            try? indexService.save(paper, in: libraryRoot)
-            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+            guardedSave(paper)
+            guardedRebuildCombined()
         }
     }
 
     func deletePaper(paperId: UUID) {
         guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
         let paper = papers[index]
+        // Guard the upcoming PDF Trash event (UI layer moves the file).
+        let pdfURL = libraryRoot.appendingPathComponent(paper.pdfPath)
+        externalChangeCoordinator?.willWrite(at: pdfURL)
         papers.remove(at: index)
-        try? indexService.delete(paper, in: libraryRoot)
-        try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        guardedDelete(paper)
+        guardedRebuildCombined()
         if appState?.selectedPaperId == paperId {
             appState?.selectedPaperId = nil
         }
@@ -335,25 +343,25 @@ class ImportCoordinator {
         let updated = try projectService.assignPaper(papers[index], to: project)
         papers[index] = updated
         // Downstream index writes are best-effort — see plan §6 / Risks.
-        try? indexService.save(papers[index], in: libraryRoot)
-        try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        guardedSave(papers[index])
+        guardedRebuildCombined()
     }
 
     func unassignPaperFromProject(paperId: UUID, project: Project) throws {
         guard let index = papers.firstIndex(where: { $0.id == paperId }) else { return }
         let updated = try projectService.unassignPaper(papers[index], from: project)
         papers[index] = updated
-        try? indexService.save(papers[index], in: libraryRoot)
-        try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+        guardedSave(papers[index])
+        guardedRebuildCombined()
     }
 
     func deleteProject(id: UUID) {
         if let updatedPapers = try? projectService.deleteProject(id: id, papers: papers) {
             papers = updatedPapers
             for paper in papers {
-                try? indexService.save(paper, in: libraryRoot)
+                guardedSave(paper)
             }
-            try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+            guardedRebuildCombined()
         }
     }
 
@@ -381,6 +389,26 @@ class ImportCoordinator {
     private func updatePaper(_ id: UUID, transform: (inout Paper) -> Void) {
         guard let index = papers.firstIndex(where: { $0.id == id }) else { return }
         transform(&papers[index])
+    }
+
+    private func guardedSave(_ paper: Paper) {
+        let url = libraryRoot
+            .appendingPathComponent("index/\(paper.id.uuidString).json")
+        externalChangeCoordinator?.willWrite(at: url)
+        try? indexService.save(paper, in: libraryRoot)
+    }
+
+    private func guardedRebuildCombined() {
+        let url = libraryRoot.appendingPathComponent("index/_all.json")
+        externalChangeCoordinator?.willWrite(at: url)
+        try? indexService.rebuildCombinedIndex(from: papers, in: libraryRoot)
+    }
+
+    private func guardedDelete(_ paper: Paper) {
+        let url = libraryRoot
+            .appendingPathComponent("index/\(paper.id.uuidString).json")
+        externalChangeCoordinator?.willWrite(at: url)
+        try? indexService.delete(paper, in: libraryRoot)
     }
 
     /// Append a Paper produced by the external-sync layer (FileSystemWatcher).
