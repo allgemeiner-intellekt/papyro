@@ -47,6 +47,7 @@ private struct GeneralSettingsTab: View {
 
 private struct IntegrationsSettingsTab: View {
     @Environment(AppState.self) private var appState
+    @Environment(ImportCoordinator.self) private var coordinator
 
     @State private var managedSymlinks: [ManagedSymlink] = []
     @State private var symlinkHealthMap: [UUID: SymlinkHealth] = [:]
@@ -73,6 +74,14 @@ private struct IntegrationsSettingsTab: View {
                         .foregroundStyle(.secondary)
                 }
                 Spacer()
+                Button {
+                    try? coordinator.projectService.rebuildSymlinks(papers: coordinator.papers)
+                } label: {
+                    Label("Rebuild", systemImage: "arrow.triangle.2.circlepath")
+                }
+                .buttonStyle(.bordered)
+                .help("Rebuild project symlinks from current papers")
+
                 Button("Link Folder…") {
                     showingSourcePicker = true
                 }

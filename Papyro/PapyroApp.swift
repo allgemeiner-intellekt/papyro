@@ -45,8 +45,15 @@ struct PapyroApp: App {
         }
 
         Settings {
-            SettingsView()
-                .environment(appState)
+            Group {
+                if let coordinator = importCoordinator {
+                    SettingsView()
+                        .environment(coordinator)
+                } else {
+                    SettingsView()
+                }
+            }
+            .environment(appState)
         }
     }
 
