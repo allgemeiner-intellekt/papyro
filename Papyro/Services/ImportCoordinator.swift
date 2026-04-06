@@ -381,4 +381,11 @@ class ImportCoordinator {
         guard let index = papers.firstIndex(where: { $0.id == id }) else { return }
         transform(&papers[index])
     }
+
+    /// Called by ExternalChangeCoordinator to insert a paper discovered via
+    /// filesystem watch. Bypasses the full import pipeline — paper arrives
+    /// with importState = .unresolved for later user-driven resolution.
+    func addPaperFromExternalSync(_ paper: Paper) {
+        papers.append(paper)
+    }
 }
