@@ -12,6 +12,15 @@ enum FSEvent: Sendable {
 /// Pure FSEvents wrapper. Watches one or more directories recursively,
 /// debounces bursts, classifies events, and delivers them on a serial queue.
 /// Knows nothing about Paper or any Papyro domain type.
+///
+/// **Threading contract:**
+/// - `start()` and `stop()` MUST be called from a single thread (in Papyro,
+///   the main actor). Calling them concurrently is a programmer error.
+/// - The `onEvent` callback runs on a private serial dispatch queue, NOT
+///   the caller's thread. Hop to MainActor inside the callback if needed.
+/// - Mutable internal state (`stream`, `pendingPaths`, `pendingWorkItem`) is
+///   accessed only from the serial queue or from `start()`/`stop()` on the
+///   single caller thread. `@unchecked Sendable` is sound under this contract.
 final class FileSystemWatcher: @unchecked Sendable {
     private let directories: [URL]
     private let debounceMilliseconds: Int
@@ -39,10 +48,21 @@ final class FileSystemWatcher: @unchecked Sendable {
         guard stream == nil else { return true }
 
         let paths = directories.map { $0.path } as CFArray
+
+        // FSEvents owns a strong reference to `self` for the stream's lifetime so
+        // that in-flight callbacks cannot execute against a deallocated watcher.
+        // Balanced by the release callback below (invoked by FSEventStreamRelease).
+        let releaseCallback: CFAllocatorReleaseCallBack = { info in
+            guard let info = info else { return }
+            Unmanaged<FileSystemWatcher>.fromOpaque(info).release()
+        }
+        let unmanagedSelf = Unmanaged.passRetained(self)
         var context = FSEventStreamContext(
             version: 0,
-            info: Unmanaged.passUnretained(self).toOpaque(),
-            retain: nil, release: nil, copyDescription: nil
+            info: unmanagedSelf.toOpaque(),
+            retain: nil,
+            release: releaseCallback,
+            copyDescription: nil
         )
 
         let flags: FSEventStreamCreateFlags = UInt32(
@@ -53,6 +73,7 @@ final class FileSystemWatcher: @unchecked Sendable {
 
         let callback: FSEventStreamCallback = { _, info, count, paths, flagsPtr, _ in
             guard let info = info else { return }
+            // Borrow — the +1 retain is owned by FSEvents via the context.
             let watcher = Unmanaged<FileSystemWatcher>.fromOpaque(info).takeUnretainedValue()
             let cfPaths = unsafeBitCast(paths, to: CFArray.self) as! [String]
             var raw: [(String, FSEventStreamEventFlags)] = []
@@ -70,12 +91,16 @@ final class FileSystemWatcher: @unchecked Sendable {
             FSEventStreamEventId(kFSEventStreamEventIdSinceNow),
             0.1,  // latency seconds
             flags
-        ) else { return false }
+        ) else {
+            // FSEvents never took ownership of the context — balance the retain manually.
+            unmanagedSelf.release()
+            return false
+        }
 
         FSEventStreamSetDispatchQueue(s, queue)
         guard FSEventStreamStart(s) else {
             FSEventStreamInvalidate(s)
-            FSEventStreamRelease(s)
+            FSEventStreamRelease(s)  // invokes context release callback, balancing the retain
             return false
         }
         stream = s

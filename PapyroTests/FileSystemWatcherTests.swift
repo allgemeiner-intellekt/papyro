@@ -84,18 +84,35 @@ struct FileSystemWatcherTests {
         defer { watcher.stop() }
         try await Task.sleep(nanoseconds: 200_000_000)
 
+        // Create both a .txt (should be ignored) and a .pdf (should be delivered).
         FileManager.default.createFile(
             atPath: dir.appendingPathComponent("notes.txt").path,
+            contents: Data())
+        FileManager.default.createFile(
+            atPath: dir.appendingPathComponent("paper.pdf").path,
             contents: Data())
         try await Task.sleep(nanoseconds: 800_000_000)
 
         let events = received.withLock { $0 }
-        #expect(events.isEmpty)
+        // Must contain the PDF event — proves delivery works.
+        #expect(events.contains { event in
+            if case .pdfAdded(let url) = event { return url.lastPathComponent == "paper.pdf" }
+            return false
+        })
+        // Must NOT contain anything mentioning notes.txt.
+        #expect(!events.contains { event in
+            switch event {
+            case .pdfAdded(let url), .pdfRemoved(let url), .indexModified(let url):
+                return url.lastPathComponent == "notes.txt"
+            case .rootChanged:
+                return false
+            }
+        })
     }
 }
 
 /// Tiny mutex helper for collecting events from the watcher's serial queue.
-final class Mutex<Value>: @unchecked Sendable {
+private final class Mutex<Value>: @unchecked Sendable {
     private var value: Value
     private let lock = NSLock()
     init(_ value: Value) { self.value = value }
