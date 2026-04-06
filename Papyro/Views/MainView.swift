@@ -5,6 +5,7 @@ struct MainView: View {
     @Environment(ImportCoordinator.self) private var coordinator
 
     @State private var showHealthBanner = false
+    @State private var showPendingBanner = true
 
     var body: some View {
         @Bindable var appState = appState
@@ -17,9 +18,15 @@ struct MainView: View {
             DetailView()
         }
         .overlay(alignment: .top) {
-            if showHealthBanner {
-                healthBanner
-                    .transition(.move(edge: .top).combined(with: .opacity))
+            VStack(spacing: 8) {
+                if showPendingBanner && coordinator.pendingPapers.count > 0 {
+                    pendingBanner
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+                if showHealthBanner {
+                    healthBanner
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
             }
         }
         .alert(item: $appState.userError) { error in
@@ -50,6 +57,29 @@ struct MainView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var pendingBanner: some View {
+        let count = coordinator.pendingPapers.count
+        HStack(spacing: 8) {
+            Image(systemName: "clock.arrow.circlepath")
+                .foregroundStyle(.orange)
+            Text("\(count) \(count == 1 ? "paper needs" : "papers need") metadata")
+                .font(.callout)
+            Spacer()
+            Button(coordinator.isResolvingPending ? "Resolving…" : "Resolve") {
+                Task { await coordinator.resolveAllPending() }
+            }
+            .disabled(coordinator.isResolvingPending)
+            .controlSize(.small)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(.horizontal, 20)
+        .padding(.top, 8)
     }
 
     @ViewBuilder
