@@ -231,55 +231,72 @@ struct DetailView: View {
             Text("Actions")
                 .font(.headline)
 
-            HStack(spacing: 12) {
-                Button("Open PDF") {
-                    openPDF(paper)
-                }
-                .buttonStyle(.bordered)
+            Grid(horizontalSpacing: 8, verticalSpacing: 8) {
+                GridRow {
+                    Button {
+                        openPDF(paper)
+                    } label: {
+                        Label("Open PDF", systemImage: "doc.richtext")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
 
-                Button("Reveal in Finder") {
-                    revealInFinder(paper)
-                }
-                .buttonStyle(.bordered)
-
-                if paper.importState == .unresolved {
-                    Button("Retry Lookup") {
-                        Task {
-                            await coordinator.retryMetadataLookup(for: paper.id)
-                        }
+                    Button {
+                        revealInFinder(paper)
+                    } label: {
+                        Label("Finder", systemImage: "folder")
+                            .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.bordered)
                 }
 
-                Button("Edit") {
-                    editTitle = paper.title
-                    editAuthors = paper.authors.joined(separator: ", ")
-                    editYear = paper.year.map(String.init) ?? ""
-                    editJournal = paper.journal ?? ""
-                    editDOI = paper.doi ?? ""
-                    editAbstract = paper.abstract ?? ""
-                    isEditing = true
+                GridRow {
+                    if noteExistsOnDisk(paper) {
+                        Button {
+                            openNote(paper)
+                        } label: {
+                            Label("Open Note", systemImage: "doc.text")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .keyboardShortcut("e", modifiers: .command)
+                    } else {
+                        Button {
+                            coordinator.createNote(for: paper.id)
+                        } label: {
+                            Label("Create Note", systemImage: "doc.badge.plus")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(.green)
+                    }
+
+                    Button {
+                        editTitle = paper.title
+                        editAuthors = paper.authors.joined(separator: ", ")
+                        editYear = paper.year.map(String.init) ?? ""
+                        editJournal = paper.journal ?? ""
+                        editDOI = paper.doi ?? ""
+                        editAbstract = paper.abstract ?? ""
+                        isEditing = true
+                    } label: {
+                        Label("Edit", systemImage: "pencil")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.bordered)
                 }
-                .buttonStyle(.bordered)
             }
 
-            // Note actions
-            if noteExistsOnDisk(paper) {
+            if paper.importState == .unresolved {
                 Button {
-                    openNote(paper)
+                    Task {
+                        await coordinator.retryMetadataLookup(for: paper.id)
+                    }
                 } label: {
-                    Label("Open Note", systemImage: "doc.text")
+                    Label("Retry Lookup", systemImage: "arrow.clockwise")
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.bordered)
-                .keyboardShortcut("e", modifiers: .command)
-            } else {
-                Button {
-                    coordinator.createNote(for: paper.id)
-                } label: {
-                    Label("Create Note", systemImage: "doc.badge.plus")
-                }
-                .buttonStyle(.bordered)
-                .tint(.green)
             }
         }
     }
