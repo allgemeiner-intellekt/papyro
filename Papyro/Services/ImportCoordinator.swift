@@ -227,6 +227,9 @@ class ImportCoordinator {
 
         if after.importState == .unresolved && beforeState == .unresolved {
             // Retry didn't move it forward — record an error string.
+            // TODO(post-M6): surface the real error from the metadata provider chain
+            // instead of this static placeholder. retryMetadataLookup currently
+            // discards the underlying error.
             updatePaper(paperId) { p in
                 p.lastResolutionError = "Metadata lookup failed"
             }
@@ -234,6 +237,8 @@ class ImportCoordinator {
                 try? indexService.save(p, in: libraryRoot)
             }
         } else if after.importState == .resolved {
+            // Second save is intentional: retryMetadataLookup already persisted the
+            // resolved paper, but clearing lastResolutionError happens after its return.
             updatePaper(paperId) { p in p.lastResolutionError = nil }
             if let p = papers.first(where: { $0.id == paperId }) {
                 try? indexService.save(p, in: libraryRoot)
