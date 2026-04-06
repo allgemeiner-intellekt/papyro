@@ -324,4 +324,121 @@ struct ImportCoordinatorTests {
         coordinator.deletePaper(paperId: UUID())  // must not crash
         #expect(coordinator.papers.isEmpty)
     }
+
+    @Test @MainActor func deletePaperClearsSelectionWhenDeletedPaperWasSelected() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let appState = AppState()
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
+        let coordinator = await ImportCoordinator(
+            libraryRoot: libRoot,
+            metadataProvider: FallbackMetadataProvider(providers: []),
+            projectService: projectService,
+            appState: appState
+        )
+
+        // Seed: a paper directly via index, then load.
+        let paper = Paper(
+            id: UUID(),
+            canonicalId: nil,
+            title: "Selected Paper",
+            authors: [],
+            year: nil, journal: nil, doi: nil, arxivId: nil, pmid: nil, isbn: nil,
+            abstract: nil, url: nil,
+            pdfPath: "papers/selected.pdf",
+            pdfFilename: "selected.pdf",
+            notePath: nil,
+            projectIDs: [],
+            status: .toRead,
+            dateAdded: Date(),
+            dateModified: Date(),
+            metadataSource: .none,
+            metadataResolved: false,
+            importState: .unresolved
+        )
+        try IndexService().save(paper, in: libRoot)
+        coordinator.loadExistingPapers()
+        #expect(coordinator.papers.contains(where: { $0.id == paper.id }))
+
+        // Set selection to this paper
+        appState.selectedPaperId = paper.id
+        #expect(appState.selectedPaperId == paper.id)
+
+        // Delete the selected paper
+        coordinator.deletePaper(paperId: paper.id)
+
+        // Verify selection was cleared
+        #expect(appState.selectedPaperId == nil)
+    }
+
+    @Test @MainActor func deletePaperPreservesSelectionForOtherPapers() async throws {
+        let libRoot = try makeTempLibrary()
+        defer { try? FileManager.default.removeItem(at: libRoot) }
+
+        let appState = AppState()
+        let projectService = try await makeProjectService(libraryRoot: libRoot)
+        let coordinator = await ImportCoordinator(
+            libraryRoot: libRoot,
+            metadataProvider: FallbackMetadataProvider(providers: []),
+            projectService: projectService,
+            appState: appState
+        )
+
+        // Seed: two papers
+        let paperA = Paper(
+            id: UUID(),
+            canonicalId: nil,
+            title: "Paper A",
+            authors: [],
+            year: nil, journal: nil, doi: nil, arxivId: nil, pmid: nil, isbn: nil,
+            abstract: nil, url: nil,
+            pdfPath: "papers/paperA.pdf",
+            pdfFilename: "paperA.pdf",
+            notePath: nil,
+            projectIDs: [],
+            status: .toRead,
+            dateAdded: Date(),
+            dateModified: Date(),
+            metadataSource: .none,
+            metadataResolved: false,
+            importState: .unresolved
+        )
+
+        let paperB = Paper(
+            id: UUID(),
+            canonicalId: nil,
+            title: "Paper B",
+            authors: [],
+            year: nil, journal: nil, doi: nil, arxivId: nil, pmid: nil, isbn: nil,
+            abstract: nil, url: nil,
+            pdfPath: "papers/paperB.pdf",
+            pdfFilename: "paperB.pdf",
+            notePath: nil,
+            projectIDs: [],
+            status: .toRead,
+            dateAdded: Date(),
+            dateModified: Date(),
+            metadataSource: .none,
+            metadataResolved: false,
+            importState: .unresolved
+        )
+
+        try IndexService().save(paperA, in: libRoot)
+        try IndexService().save(paperB, in: libRoot)
+        coordinator.loadExistingPapers()
+        #expect(coordinator.papers.count == 2)
+
+        // Set selection to paperA
+        appState.selectedPaperId = paperA.id
+        #expect(appState.selectedPaperId == paperA.id)
+
+        // Delete the unselected paper (paperB)
+        coordinator.deletePaper(paperId: paperB.id)
+
+        // Verify selection was preserved for paperA
+        #expect(appState.selectedPaperId == paperA.id)
+        #expect(coordinator.papers.contains(where: { $0.id == paperA.id }))
+        #expect(!coordinator.papers.contains(where: { $0.id == paperB.id }))
+    }
 }
