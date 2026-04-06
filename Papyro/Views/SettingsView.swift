@@ -10,7 +10,7 @@ struct SettingsView: View {
 
             IntegrationsSettingsTab()
                 .tabItem {
-                    Label("Integrations", systemImage: "link")
+                    Label("Symlinks", systemImage: "link")
                 }
         }
         .frame(width: 550, height: 400)
@@ -26,13 +26,10 @@ private struct GeneralSettingsTab: View {
         Form {
             Section("Library") {
                 LabeledContent("Library Path") {
-                    HStack {
-                        Text(appState.libraryConfig?.libraryPath ?? "Not set")
-                            .foregroundStyle(.secondary)
-                            .lineLimit(1)
-                            .truncationMode(.middle)
-                        Spacer()
-                    }
+                    Text(appState.libraryConfig?.libraryPath ?? "Not set")
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .truncationMode(.middle)
                 }
 
                 LabeledContent("Translation Server") {
@@ -89,6 +86,7 @@ private struct IntegrationsSettingsTab: View {
                     systemImage: "link.badge.plus",
                     description: Text("Link library folders to external destinations for easy access in Obsidian or by agents.")
                 )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List {
                     ForEach(managedSymlinks) { symlink in
