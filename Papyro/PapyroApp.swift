@@ -7,6 +7,7 @@ struct PapyroApp: App {
     @State private var importCoordinator: ImportCoordinator?
     @State private var externalCoordinator: ExternalChangeCoordinator?
     @State private var fileWatcher: FileSystemWatcher?
+    @Environment(\.scenePhase) private var scenePhase
 
     init() {
         let state = AppState()
@@ -35,6 +36,12 @@ struct PapyroApp: App {
             }
             .onAppear {
                 libraryManager.detectExistingLibrary()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                guard newPhase == .active, let extCoord = externalCoordinator else { return }
+                Task { @MainActor in
+                    await extCoord.reconcileIfNeeded()
+                }
             }
         }
         .commands {

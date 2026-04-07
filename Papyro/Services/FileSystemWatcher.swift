@@ -149,17 +149,20 @@ final class FileSystemWatcher: @unchecked Sendable {
             let url = URL(fileURLWithPath: path)
             let ext = url.pathExtension.lowercased()
 
-            let isRemoved = flags & FSEventStreamEventFlags(kFSEventStreamEventFlagItemRemoved) != 0
-                && !FileManager.default.fileExists(atPath: path)
+            // Use on-disk existence as the source of truth rather than the
+            // FSEvents flag bits. Finder's "Move to Trash" is a rename, not a
+            // remove, so kFSEventStreamEventFlagItemRemoved is not set — but
+            // the file is gone from the watched directory all the same.
+            let exists = FileManager.default.fileExists(atPath: path)
 
             if ext == "pdf" {
-                if isRemoved {
-                    onEvent(.pdfRemoved(url))
-                } else if FileManager.default.fileExists(atPath: path) {
+                if exists {
                     onEvent(.pdfAdded(url))
+                } else {
+                    onEvent(.pdfRemoved(url))
                 }
             } else if ext == "json" && path.contains("/index/") {
-                if !isRemoved && FileManager.default.fileExists(atPath: path) {
+                if exists {
                     onEvent(.indexModified(url))
                 }
             }

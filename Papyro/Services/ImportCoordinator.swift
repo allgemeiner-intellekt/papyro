@@ -189,11 +189,22 @@ class ImportCoordinator {
         guard let paper = papers.first(where: { $0.id == paperId }),
               paper.importState == .unresolved else { return }
 
-        let cachedText = textExtractor.loadCachedText(for: paperId, in: libraryRoot)
-        let identifiers = cachedText.map { identifierParser.parse($0) } ?? ParsedIdentifiers()
         let pdfURL = libraryRoot.appendingPathComponent(paper.pdfPath)
 
-        await resolveMetadata(paperId: paperId, pdfURL: pdfURL, identifiers: identifiers, extractedText: cachedText)
+        // Cache may be empty for papers that entered the library via external
+        // sync (dropped into papers/ while Papyro was closed) — those skip the
+        // import pipeline's extraction step. Extract on demand so identifier
+        // parsing and the title-search fallback have something to work with.
+        var text = textExtractor.loadCachedText(for: paperId, in: libraryRoot)
+        if text == nil {
+            text = textExtractor.extractText(from: pdfURL)
+            if let text {
+                try? textExtractor.cacheText(text, for: paperId, in: libraryRoot)
+            }
+        }
+        let identifiers = text.map { identifierParser.parse($0) } ?? ParsedIdentifiers()
+
+        await resolveMetadata(paperId: paperId, pdfURL: pdfURL, identifiers: identifiers, extractedText: text)
     }
 
     /// Drains every paper currently marked .unresolved through the same

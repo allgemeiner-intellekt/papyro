@@ -16,6 +16,11 @@ final class ExternalChangeCoordinator {
     /// Map of absolute path → expiration date. Entries older than now are stale.
     private var writeGuard: [String: Date] = [:]
 
+    /// Timestamp of the most recent `reconcile()` call. Used by
+    /// `reconcileIfNeeded()` to rate-limit focus-driven sweeps.
+    private var lastReconcile: Date = .distantPast
+    private let reconcileDebounce: TimeInterval = 2.0
+
     init(
         libraryRoot: URL,
         importCoordinator: ImportCoordinator,
@@ -118,9 +123,18 @@ final class ExternalChangeCoordinator {
 
     // MARK: - Reconciliation
 
+    /// Calls `reconcile()` unless it ran within the debounce window. Cheap
+    /// safety net for FSEvents misses (sandbox edge cases, sleep/wake, the
+    /// app being suspended while files moved). Wired to scenePhase=.active.
+    func reconcileIfNeeded() async {
+        if Date().timeIntervalSince(lastReconcile) < reconcileDebounce { return }
+        await reconcile()
+    }
+
     /// Walks papers/ and the in-memory index, syncing them. Called once at
     /// launch (and after the watcher reports rootChanged recovery).
     func reconcile() async {
+        lastReconcile = Date()
         guard let importer = importCoordinator else { return }
 
         // Discover every PDF under papers/, recursively.

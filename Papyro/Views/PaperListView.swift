@@ -138,6 +138,11 @@ struct PaperListView: View {
                     .keyboardShortcut("f", modifiers: .command)
                     .hidden()
             }
+            ToolbarItem(placement: .automatic) {
+                Button("Move to Trash") { requestDeleteSelectedPaper() }
+                    .keyboardShortcut(.delete, modifiers: .command)
+                    .hidden()
+            }
         }
         .navigationTitle(navigationTitle)
         .onChange(of: appState.selectedSidebarItem) {
@@ -153,15 +158,6 @@ struct PaperListView: View {
             guard !pdfURLs.isEmpty else { return false }
             Task { await coordinator.importPDFs(pdfURLs) }
             return true
-        }
-        .onKeyPress(.delete, phases: .down) { press in
-            guard press.modifiers == .command else { return .ignored }
-            guard !appState.isEditingText else { return .ignored }
-            guard let id = appState.selectedPaperId,
-                  let paper = coordinator.papers.first(where: { $0.id == id })
-            else { return .ignored }
-            paperPendingDelete = paper
-            return .handled
         }
         .confirmationDialog(
             "Move to Trash?",
@@ -189,6 +185,14 @@ struct PaperListView: View {
         case .project(let id):
             coordinator.projectService.projects.first { $0.id == id }?.name ?? "Papers"
         }
+    }
+
+    private func requestDeleteSelectedPaper() {
+        guard !appState.isEditingText else { return }
+        guard let id = appState.selectedPaperId,
+              let paper = coordinator.papers.first(where: { $0.id == id })
+        else { return }
+        paperPendingDelete = paper
     }
 
     private func deletePaperToTrash(_ paper: Paper) {
