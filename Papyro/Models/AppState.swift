@@ -6,6 +6,7 @@ struct UserFacingError: Identifiable {
     let message: String
 }
 
+@MainActor
 @Observable
 class AppState {
     var libraryConfig: LibraryConfig?
