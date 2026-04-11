@@ -22,6 +22,10 @@ struct SettingsView: View {
 private struct GeneralSettingsTab: View {
     @Environment(AppState.self) private var appState
 
+    @State private var translationServerURL: String = ""
+    @State private var saveError: String?
+    @State private var savedConfirmation: Bool = false
+
     var body: some View {
         Form {
             Section("Library") {
@@ -31,15 +35,90 @@ private struct GeneralSettingsTab: View {
                         .lineLimit(1)
                         .truncationMode(.middle)
                 }
+            }
 
-                LabeledContent("Translation Server") {
-                    Text(appState.libraryConfig?.translationServerURL ?? "Not configured")
+            Section {
+                TextField(
+                    "Server URL",
+                    text: $translationServerURL,
+                    prompt: Text("https://translate.example.com")
+                )
+                .autocorrectionDisabled()
+                .onSubmit { save() }
+
+                HStack {
+                    Text("Zotero translation-server endpoint. Leave blank to disable.")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
+                    Spacer()
+                    if savedConfirmation {
+                        Label("Saved", systemImage: "checkmark.circle.fill")
+                            .font(.caption)
+                            .foregroundStyle(.green)
+                            .transition(.opacity)
+                    }
+                    Button("Save") { save() }
+                        .disabled(!isDirty)
                 }
+
+                if let saveError {
+                    Text(saveError)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+            } header: {
+                Text("Translation Server")
             }
         }
         .formStyle(.grouped)
         .padding()
+        .onAppear {
+            translationServerURL = appState.libraryConfig?.translationServerURL ?? ""
+        }
+    }
+
+    private var isDirty: Bool {
+        let current = appState.libraryConfig?.translationServerURL ?? ""
+        return translationServerURL.trimmingCharacters(in: .whitespaces) != current
+    }
+
+    private func save() {
+        saveError = nil
+        let trimmed = translationServerURL.trimmingCharacters(in: .whitespaces)
+
+        if !trimmed.isEmpty {
+            guard let url = URL(string: trimmed),
+                  let scheme = url.scheme?.lowercased(),
+                  scheme == "http" || scheme == "https",
+                  url.host != nil else {
+                saveError = "Enter a valid http:// or https:// URL."
+                return
+            }
+        }
+
+        guard var config = appState.libraryConfig else {
+            saveError = "No library loaded."
+            return
+        }
+        config.translationServerURL = trimmed.isEmpty ? nil : trimmed
+
+        do {
+            let configURL = URL(fileURLWithPath: config.libraryPath).appendingPathComponent("config.json")
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+            encoder.dateEncodingStrategy = .iso8601
+            let data = try encoder.encode(config)
+            try data.write(to: configURL, options: .atomic)
+            appState.libraryConfig = config
+            translationServerURL = trimmed
+            withAnimation { savedConfirmation = true }
+            Task {
+                try? await Task.sleep(for: .seconds(2))
+                await MainActor.run { withAnimation { savedConfirmation = false } }
+            }
+        } catch {
+            saveError = "Couldn't save: \(error.localizedDescription)"
+        }
     }
 }
 

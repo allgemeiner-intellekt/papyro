@@ -200,6 +200,10 @@ struct PaperListView: View {
         let pdfURL = URL(fileURLWithPath: config.libraryPath)
             .appendingPathComponent(paper.pdfPath)
         if FileManager.default.fileExists(atPath: pdfURL.path) {
+            // Install the self-write guard *before* trashing so the FSEvents
+            // remove event can't race ahead of it and be mis-handled as an
+            // external delete.
+            coordinator.externalChangeCoordinator?.willWrite(at: pdfURL)
             do {
                 try FileManager.default.trashItem(at: pdfURL, resultingItemURL: nil)
             } catch {

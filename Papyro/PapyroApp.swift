@@ -70,16 +70,7 @@ struct PapyroApp: App {
         // Resolve symlinks once so FSEvents paths and our prefix-stripping agree.
         let libraryRoot = URL(fileURLWithPath: config.libraryPath).resolvingSymlinksInPath()
 
-        // Load column preferences from config
-        if let columns = config.visibleColumns {
-            appState.visibleColumns = Set(columns)
-        }
-        if let sortCol = config.sortColumn {
-            appState.sortColumn = sortCol
-        }
-        if let sortAsc = config.sortAscending {
-            appState.sortAscending = sortAsc
-        }
+        // Column/sort preferences are loaded from UserDefaults inside AppState.init.
 
         var providers: [MetadataProvider] = []
         if let serverURLString = config.translationServerURL,
