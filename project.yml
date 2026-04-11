@@ -22,8 +22,10 @@ targets:
         CFBundleIconName: AppIcon
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        LSApplicationCategoryType: public.app-category.productivity
         LSMinimumSystemVersion: "15.0"
         NSHighResolutionCapable: true
+        NSHumanReadableCopyright: "Copyright © 2026 allgemeiner-intellekt. All rights reserved."
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.allgemeiner-intellekt.Papyro
