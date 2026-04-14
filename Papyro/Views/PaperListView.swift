@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct PaperListView: View {
     @Environment(AppState.self) private var appState
@@ -143,6 +144,19 @@ struct PaperListView: View {
                     .keyboardShortcut(.delete, modifiers: .command)
                     .hidden()
             }
+            ToolbarItem(placement: .automatic) {
+                Menu {
+                    Button(exportMenuLabel(format: .bibtex)) {
+                        exportToFile(format: .bibtex)
+                    }
+                    Button(exportMenuLabel(format: .ris)) {
+                        exportToFile(format: .ris)
+                    }
+                } label: {
+                    Label("Export", systemImage: "square.and.arrow.up")
+                }
+                .disabled(filteredPapers.isEmpty)
+            }
         }
         .navigationTitle(navigationTitle)
         .onChange(of: appState.selectedSidebarItem) {
@@ -218,6 +232,38 @@ struct PaperListView: View {
         paperPendingDelete = nil
     }
 
+    private var hasActiveFilter: Bool {
+        appState.selectedStatusFilter != nil ||
+        !appState.selectedSidebarItem.isAllPapers
+    }
+
+    private func exportMenuLabel(format: CitationFormat) -> String {
+        let prefix = hasActiveFilter ? "Export Filtered" : "Export All"
+        switch format {
+        case .bibtex: return "\(prefix) as BibTeX…"
+        case .ris: return "\(prefix) as RIS…"
+        }
+    }
+
+    private func exportToFile(format: CitationFormat) {
+        let panel = NSSavePanel()
+        let ext = String(CitationExporter.fileExtension(for: format).dropFirst())
+        panel.allowedContentTypes = [UTType(filenameExtension: ext)!]
+        panel.nameFieldStringValue = "library" + CitationExporter.fileExtension(for: format)
+
+        guard panel.runModal() == .OK, let url = panel.url else { return }
+
+        let content = CitationExporter.exportBatch(filteredPapers, format: format)
+        do {
+            try content.write(to: url, atomically: true, encoding: .utf8)
+        } catch {
+            appState.userError = UserFacingError(
+                title: "Export Failed",
+                message: error.localizedDescription
+            )
+        }
+    }
+
     @ViewBuilder
     private func paperContextMenu(paper: Paper) -> some View {
         Menu("Add to Project") {
@@ -277,6 +323,20 @@ struct PaperListView: View {
                     .appendingPathComponent(paper.pdfPath)
                 NSWorkspace.shared.activateFileViewerSelecting([pdfURL])
             }
+        }
+
+        Divider()
+
+        Button("Copy as BibTeX") {
+            let text = CitationExporter.export(paper, format: .bibtex)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(text, forType: .string)
+        }
+
+        Button("Copy as RIS") {
+            let text = CitationExporter.export(paper, format: .ris)
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(text, forType: .string)
         }
     }
 }

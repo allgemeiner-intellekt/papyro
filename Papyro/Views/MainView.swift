@@ -49,6 +49,10 @@ struct MainView: View {
             guard press.modifiers == .command else { return .ignored }
             return openOrCreateNote()
         }
+        .onKeyPress("c", phases: .down) { press in
+            guard press.modifiers == [.command, .shift] else { return .ignored }
+            return copySelectedPaperBibtex()
+        }
         .onAppear {
             if appState.symlinkHealthIssueCount > 0 {
                 withAnimation { showHealthBanner = true }
@@ -131,6 +135,16 @@ struct MainView: View {
                 message: error.localizedDescription
             )
         }
+        return .handled
+    }
+
+    private func copySelectedPaperBibtex() -> KeyPress.Result {
+        guard !appState.isEditingText else { return .ignored }
+        guard let paperId = appState.selectedPaperId else { return .ignored }
+        guard let paper = coordinator.papers.first(where: { $0.id == paperId }) else { return .ignored }
+        let text = CitationExporter.export(paper, format: .bibtex)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
         return .handled
     }
 

@@ -11,6 +11,7 @@ struct DetailView: View {
     @State private var editJournal = ""
     @State private var editDOI = ""
     @State private var editAbstract = ""
+    @State private var citationCopied = false
 
     private var paper: Paper? {
         guard let id = appState.selectedPaperId else { return nil }
@@ -340,6 +341,23 @@ struct DetailView: View {
                     }
                     .buttonStyle(.bordered)
                 }
+
+                GridRow {
+                    Menu {
+                        Button("Copy as BibTeX") {
+                            copyCitation(paper, format: .bibtex)
+                        }
+                        Button("Copy as RIS") {
+                            copyCitation(paper, format: .ris)
+                        }
+                    } label: {
+                        Label(citationCopied ? "Copied" : "Copy Citation",
+                              systemImage: citationCopied ? "checkmark" : "doc.on.doc")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .menuStyle(.borderlessButton)
+                    .frame(maxWidth: .infinity)
+                }
             }
 
             if paper.importState == .unresolved {
@@ -353,6 +371,17 @@ struct DetailView: View {
                 }
                 .buttonStyle(.bordered)
             }
+        }
+    }
+
+    private func copyCitation(_ paper: Paper, format: CitationFormat) {
+        let text = CitationExporter.export(paper, format: format)
+        NSPasteboard.general.clearContents()
+        NSPasteboard.general.setString(text, forType: .string)
+        withAnimation { citationCopied = true }
+        Task {
+            try? await Task.sleep(for: .seconds(2))
+            await MainActor.run { withAnimation { citationCopied = false } }
         }
     }
 
