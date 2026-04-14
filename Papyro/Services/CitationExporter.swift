@@ -10,14 +10,17 @@ struct CitationExporter: Sendable {
         "the", "a", "an", "of", "for", "and", "in", "on", "to", "with",
     ]
 
-    private static let bibtexSpecialChars: [(Character, String)] = [
-        ("&", "\\&"),
-        ("%", "\\%"),
-        ("$", "\\$"),
-        ("#", "\\#"),
-        ("_", "\\_"),
-        ("~", "\\~{}"),
-        ("^", "\\^{}"),
+    private static let bibtexEscapes: [Character: String] = [
+        "\\": "\\textbackslash{}",
+        "{": "\\{",
+        "}": "\\}",
+        "&": "\\&",
+        "%": "\\%",
+        "$": "\\$",
+        "#": "\\#",
+        "_": "\\_",
+        "~": "\\~{}",
+        "^": "\\^{}",
     ]
 
     static func export(_ paper: Paper, format: CitationFormat) -> String {
@@ -48,7 +51,7 @@ struct CitationExporter: Sendable {
                 if needsSuffix.contains(key) {
                     let idx = suffixCounters[key, default: 0]
                     suffixCounters[key] = idx + 1
-                    let suffix = String(UnicodeScalar(UInt32(97 + idx))!)
+                    let suffix = idx < 26 ? String(UnicodeScalar(97 + idx)) : String(idx + 1)
                     resolvedKeys.append(key + suffix)
                 } else {
                     resolvedKeys.append(key)
@@ -61,7 +64,7 @@ struct CitationExporter: Sendable {
             return entries.joined(separator: "\n\n")
 
         case .ris:
-            return papers.map { risEntry(for: $0) }.joined(separator: "\n")
+            return papers.map { risEntry(for: $0) }.joined(separator: "\n\n")
         }
     }
 
@@ -105,6 +108,10 @@ struct CitationExporter: Sendable {
 
         if let abstract = paper.abstract {
             lines.append("AB  - \(abstract)")
+        }
+
+        if let arxivId = paper.arxivId {
+            lines.append("N1  - arXiv: \(arxivId)")
         }
 
         lines.append("ER  - ")
@@ -190,9 +197,14 @@ struct CitationExporter: Sendable {
     }
 
     private static func escapeBibtex(_ text: String) -> String {
-        var result = text
-        for (char, replacement) in bibtexSpecialChars {
-            result = result.map { $0 == char ? replacement : String($0) }.joined()
+        var result = ""
+        result.reserveCapacity(text.count)
+        for char in text {
+            if let replacement = bibtexEscapes[char] {
+                result += replacement
+            } else {
+                result.append(char)
+            }
         }
         return result
     }

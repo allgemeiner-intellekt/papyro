@@ -248,7 +248,9 @@ struct PaperListView: View {
     private func exportToFile(format: CitationFormat) {
         let panel = NSSavePanel()
         let ext = String(CitationExporter.fileExtension(for: format).dropFirst())
-        panel.allowedContentTypes = [UTType(filenameExtension: ext)!]
+        if let utType = UTType(filenameExtension: ext) {
+            panel.allowedContentTypes = [utType]
+        }
         panel.nameFieldStringValue = "library" + CitationExporter.fileExtension(for: format)
 
         guard panel.runModal() == .OK, let url = panel.url else { return }

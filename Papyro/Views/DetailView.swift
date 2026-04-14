@@ -12,6 +12,7 @@ struct DetailView: View {
     @State private var editDOI = ""
     @State private var editAbstract = ""
     @State private var citationCopied = false
+    @State private var citationResetTask: Task<Void, Never>?
 
     private var paper: Paper? {
         guard let id = appState.selectedPaperId else { return nil }
@@ -99,6 +100,8 @@ struct DetailView: View {
                 editJournal = ""
                 editDOI = ""
                 editAbstract = ""
+                citationCopied = false
+                citationResetTask?.cancel()
             }
             .onChange(of: isEditing) {
                 appState.isEditingText = isEditing
@@ -355,8 +358,8 @@ struct DetailView: View {
                               systemImage: citationCopied ? "checkmark" : "doc.on.doc")
                             .frame(maxWidth: .infinity)
                     }
-                    .menuStyle(.borderlessButton)
-                    .frame(maxWidth: .infinity)
+                    .buttonStyle(.bordered)
+                    .gridCellColumns(2)
                 }
             }
 
@@ -378,9 +381,11 @@ struct DetailView: View {
         let text = CitationExporter.export(paper, format: format)
         NSPasteboard.general.clearContents()
         NSPasteboard.general.setString(text, forType: .string)
+        citationResetTask?.cancel()
         withAnimation { citationCopied = true }
-        Task {
+        citationResetTask = Task {
             try? await Task.sleep(for: .seconds(2))
+            guard !Task.isCancelled else { return }
             await MainActor.run { withAnimation { citationCopied = false } }
         }
     }

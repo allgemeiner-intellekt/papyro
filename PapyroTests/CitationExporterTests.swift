@@ -200,6 +200,17 @@ struct CitationExporterTests {
         )
         let entry = CitationExporter.bibtexEntry(for: paper)
         #expect(entry.contains(#"Cats \& Dogs"#))
+        #expect(entry.contains(#"100\%"#))
+    }
+
+    @Test func bibtexEntryEscapesBracesAndBackslash() {
+        let paper = makePaper(
+            title: #"The {EM} Algorithm: A \textbf{Review}"#,
+            authors: ["Doe, J."]
+        )
+        let entry = CitationExporter.bibtexEntry(for: paper)
+        #expect(entry.contains(#"\{EM\}"#))
+        #expect(entry.contains(#"\textbackslash{}"#))
     }
 
     @Test func bibtexEntryMultipleAuthorsJoinedWithAnd() {
@@ -366,6 +377,7 @@ struct CitationExporterTests {
 
         let erLines = result.components(separatedBy: "\n").filter { $0.hasPrefix("ER  - ") }
         #expect(erLines.count == 2)
+        #expect(result.contains("ER  - \n\nTY  - "))
     }
 
     // MARK: - File Extension
@@ -434,6 +446,18 @@ struct CitationExporterTests {
         let paper = makePaper(url: "https://example.com/paper.pdf")
         let entry = CitationExporter.risEntry(for: paper)
         #expect(entry.contains("UR  - https://example.com/paper.pdf"))
+    }
+
+    @Test func risEntryIncludesArxivIdAsNote() {
+        let paper = makePaper(arxivId: "2301.00001")
+        let entry = CitationExporter.risEntry(for: paper)
+        #expect(entry.contains("N1  - arXiv: 2301.00001"))
+    }
+
+    @Test func authorGivenSurnameFormatConvertedToSurnameGiven() {
+        let paper = makePaper(authors: ["Ashish Vaswani", "Noam Shazeer"])
+        let entry = CitationExporter.bibtexEntry(for: paper)
+        #expect(entry.contains("Vaswani, Ashish and Shazeer, Noam"))
     }
 
     @Test func bibtexEntrySingleAuthor() {
