@@ -15,6 +15,7 @@
 		1503CF399738BB43C8B58367 /* PaperTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6DBDF3669E73FF302194E21 /* PaperTests.swift */; };
 		16DE6310023701284FA2747D /* LibraryConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 54DA00819856E73CE52AF240 /* LibraryConfig.swift */; };
 		1F7B3BEDC96C83B28C88376F /* SymlinkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF51B20986970EABA5015192 /* SymlinkService.swift */; };
+		2EB7577FF314A723E1B9778F /* CitationExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02D649EFB9F6A541774146C /* CitationExporter.swift */; };
 		334D9C61C4484D41988700DE /* ProjectService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B3D78C56CFF51EFB0018843 /* ProjectService.swift */; };
 		34B1C95CBDD02B2BDC089E3E /* SymlinkServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBB11C2209E2730F9DB257B9 /* SymlinkServiceTests.swift */; };
 		4221DBD7BD0060BCB9CC07FB /* PapyroApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4E1F7C2F1BC78C5A50676D1 /* PapyroApp.swift */; };
@@ -52,6 +53,7 @@
 		AE1ACEBFAA556ACADBA63079 /* IdentifierParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04ACDA8F81DD3E0A6042825F /* IdentifierParserTests.swift */; };
 		B2F59B298CD5FD0A04244E4A /* TranslationServerProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBBA0D6387E4919188A5BADF /* TranslationServerProvider.swift */; };
 		BDD9E31BF618E29991D2E483 /* FileSystemWatcherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C07F909744177A820CB8021 /* FileSystemWatcherTests.swift */; };
+		C57296C29E8E5A68D4ADDBF7 /* CitationExporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F269DEA16DB6F7401A1AFED1 /* CitationExporterTests.swift */; };
 		D39C0E7DE291C86A03A9EF31 /* Paper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4933E4C5E3BD5CA290238F /* Paper.swift */; };
 		DF14EB6193DABC7414C887DD /* PaperMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCE9D51B63D0BC602CE01BE1 /* PaperMetadata.swift */; };
 		E8D3C142A94C572F059CD0D0 /* NoteGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C561FCDE8A1D03D70236A905 /* NoteGenerator.swift */; };
@@ -116,6 +118,7 @@
 		BC17CFAAC697D451AE2B512E /* FileSystemWatcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileSystemWatcher.swift; sourceTree = "<group>"; };
 		C209351634492F96A09ECE8A /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
 		C561FCDE8A1D03D70236A905 /* NoteGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteGenerator.swift; sourceTree = "<group>"; };
+		D02D649EFB9F6A541774146C /* CitationExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitationExporter.swift; sourceTree = "<group>"; };
 		D27710A85129BE25D8A4FDDF /* TextExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextExtractor.swift; sourceTree = "<group>"; };
 		D7A3E6BF31E88C56F44F74EC /* LibraryConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryConfigTests.swift; sourceTree = "<group>"; };
 		D9721DDADC1DD04AC410A351 /* FileServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileServiceTests.swift; sourceTree = "<group>"; };
@@ -127,6 +130,7 @@
 		E5E7F4EF35D29CB88694026F /* ImportCoordinatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportCoordinatorTests.swift; sourceTree = "<group>"; };
 		E6DBDF3669E73FF302194E21 /* PaperTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaperTests.swift; sourceTree = "<group>"; };
 		F17FD1881F1FA75CB092AB21 /* ProjectChipsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectChipsView.swift; sourceTree = "<group>"; };
+		F269DEA16DB6F7401A1AFED1 /* CitationExporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CitationExporterTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -187,6 +191,7 @@
 		D70123C1A100F0385F166B6D /* PapyroTests */ = {
 			isa = PBXGroup;
 			children = (
+				F269DEA16DB6F7401A1AFED1 /* CitationExporterTests.swift */,
 				BAE46C1BBED792C231E9AFE6 /* ExternalChangeCoordinatorTests.swift */,
 				E2CAE29C21CABA7AB9290604 /* FallbackMetadataProviderTests.swift */,
 				D9721DDADC1DD04AC410A351 /* FileServiceTests.swift */,
@@ -211,6 +216,7 @@
 		E72AA17CD4538D4531CEFC8A /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				D02D649EFB9F6A541774146C /* CitationExporter.swift */,
 				DE54B388993575DF40E5F8DA /* CrossRefProvider.swift */,
 				8913950F3D7963FD91BF8723 /* ExternalChangeCoordinator.swift */,
 				5BA9C8B8548DF1273C90A79F /* FallbackMetadataProvider.swift */,
@@ -334,6 +340,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6E2CADF80197570ACD684891 /* AppState.swift in Sources */,
+				2EB7577FF314A723E1B9778F /* CitationExporter.swift in Sources */,
 				627423BE04F642376F255E8F /* CrossRefProvider.swift in Sources */,
 				0D05CD7BB8F7734D729BF02F /* DetailView.swift in Sources */,
 				ECCBD0A593766ED56AF6F554 /* ExternalChangeCoordinator.swift in Sources */,
@@ -374,6 +381,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C57296C29E8E5A68D4ADDBF7 /* CitationExporterTests.swift in Sources */,
 				656A6CE8E22D7FF3C629A86F /* ExternalChangeCoordinatorTests.swift in Sources */,
 				0B4E42A9ED4D9AB888F358A1 /* FallbackMetadataProviderTests.swift in Sources */,
 				7DC679C915DD8F5F8082A3CF /* FileServiceTests.swift in Sources */,

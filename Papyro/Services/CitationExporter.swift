@@ -51,7 +51,7 @@ struct CitationExporter: Sendable {
                 if needsSuffix.contains(key) {
                     let idx = suffixCounters[key, default: 0]
                     suffixCounters[key] = idx + 1
-                    let suffix = idx < 26 ? String(UnicodeScalar(97 + idx)) : String(idx + 1)
+                    let suffix = idx < 26 ? String(UnicodeScalar(97 + idx)!) : String(idx + 1)
                     resolvedKeys.append(key + suffix)
                 } else {
                     resolvedKeys.append(key)
